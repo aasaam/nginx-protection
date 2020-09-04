@@ -54,7 +54,7 @@ func RouterAuth(
 
 		if err == nil && authToken.Checksum == clientCheckSum {
 			// prometheus
-			PrometheusAccpetTotal.With(prometheus.Labels{"type": authToken.Type})
+			PrometheusAccpetTotal.With(prometheus.Labels{"type": authToken.Type}).Inc()
 
 			protectionStatus := NewProtectionStatus()
 			protectionStatus.SetStatus("accept")
@@ -69,6 +69,8 @@ func RouterAuth(
 			return
 		}
 
+		// prometheus
+		PrometheusRejectTotal.Inc()
 		code := 401
 		c.Status(code).Send(http.StatusText(401))
 	})

@@ -57,7 +57,7 @@ func RouterChallenge(
 		template := "challenge-" + challengeType + "." + lang
 
 		// prometheus
-		PrometheusGeneratedChallenge.With(prometheus.Labels{"type": challengeType})
+		PrometheusGeneratedChallenge.With(prometheus.Labels{"type": challengeType}).Inc()
 
 		dataMap := fiber.Map{
 			"Token":   challengeToken,

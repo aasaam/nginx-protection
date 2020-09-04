@@ -193,5 +193,6 @@ server {
 
 List of todo list:
 
+- [ ] More test
 - [ ] Add username password mechanism for check with 3rd party services.
 - [ ] Add SMS verification mechanism for check with 3rd party services.

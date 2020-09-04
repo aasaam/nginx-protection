@@ -27,7 +27,7 @@ func GetHTTPServer(config *Config, rsa *rsa.PrivateKey) *fiber.App {
 
 	srv := fiber.New(&fiber.Settings{
 		Views:                 engine,
-		Prefork:               true,
+		Prefork:               false,
 		DisableStartupMessage: true,
 		CaseSensitive:         true,
 		StrictRouting:         true,

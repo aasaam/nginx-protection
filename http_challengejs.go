@@ -8,8 +8,8 @@ import (
 	"github.com/gofiber/fiber"
 )
 
-// RouterChallengeJS js challenge
-func RouterChallengeJS(
+// RouterJS js challenge
+func RouterJS(
 	config *Config,
 	router fiber.Router,
 	rsa *rsa.PrivateKey,

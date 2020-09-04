@@ -10,8 +10,8 @@ import (
 	"github.com/pquerna/otp/totp"
 )
 
-// RouterChallengeOTP otp challenge
-func RouterChallengeOTP(
+// RouterOTP otp challenge
+func RouterOTP(
 	config *Config,
 	router fiber.Router,
 	rsa *rsa.PrivateKey,

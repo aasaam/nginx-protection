@@ -52,7 +52,7 @@ func main() {
 
 				app := GetHTTPServer(&config, rsa)
 
-				app.Listen(c.Int("port"))
+				app.Listen("127.0.0.1:" + c.String("port"))
 				return nil
 			},
 		},

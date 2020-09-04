@@ -12,10 +12,10 @@ import (
 
 // IsValidLanguage check for supporeted challenge
 func IsValidLanguage(lang string) bool {
-	supportedLanguages := reflect.ValueOf(SupportedLanguages)
+	supportedLanguage := reflect.ValueOf(SupportedLanguage)
 
-	for i := 0; i < supportedLanguages.Len(); i++ {
-		if supportedLanguages.Index(i).Interface() == lang {
+	for i := 0; i < supportedLanguage.Len(); i++ {
+		if supportedLanguage.Index(i).Interface() == lang {
 			return true
 		}
 	}

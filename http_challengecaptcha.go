@@ -8,8 +8,8 @@ import (
 	"github.com/gofiber/fiber"
 )
 
-// RouterChallengeCaptcha captcha challenge
-func RouterChallengeCaptcha(
+// RouterCaptcha captcha challenge
+func RouterCaptcha(
 	config *Config,
 	router fiber.Router,
 	rsa *rsa.PrivateKey,

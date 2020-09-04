@@ -50,9 +50,9 @@ func GetHTTPServer(config *Config, rsa *rsa.PrivateKey) *fiber.App {
 
 	RouterAuth(config, api, rsa)
 	RouterChallenge(config, api, rsa)
-	RouterChallengeJS(config, api, rsa)
-	RouterChallengeCaptcha(config, api, rsa)
-	RouterChallengeOTP(config, api, rsa)
+	RouterJS(config, api, rsa)
+	RouterCaptcha(config, api, rsa)
+	RouterOTP(config, api, rsa)
 
 	return srv
 }

@@ -43,8 +43,8 @@ type OTPConfig struct {
 	Period uint
 }
 
-// SupportedLanguages is list of langauges
-var SupportedLanguages = []string{"fa", "en"}
+// SupportedLanguage is list of language
+var SupportedLanguage = []string{"fa", "en"}
 
 // CaptchaLetters is letters for generation captcha code
 var CaptchaLetters = []rune("123456789")

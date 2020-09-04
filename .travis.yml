@@ -8,6 +8,10 @@ node_js:
 env:
   - 'PATH=/home/travis/gopath/bin:$PATH'
 before_install:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install stable
+  - nvm use stable
+  - npm install
   - export WORK_DIR=$(pwd)
   - cd $WORK_DIR/web
   - npm install

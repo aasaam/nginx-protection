@@ -1,0 +1,12 @@
+#loading.logo(style="display:none")
+  .columns
+    .column
+      .content.has-text-centered
+        img(src=assetPath + 'images/logo.' + version + '.svg' alt=i18n.organization)
+        h4=i18n.organization
+        p(data-ng-hide="noMoreWait")=i18n.pleaseWait
+  .columns(data-ng-hide="noMoreWait")
+    .column.is-4
+    .column.is-4
+      progress.progress.is-info.is-small(value='{{ timerProgress.current }}', max='{{ timerProgress.max }}' data-ng-bind="timerProgress.percent")
+script document.getElementById('loading').style.display = 'block';

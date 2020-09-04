@@ -1,0 +1,38 @@
+@font-face {
+  font-family: 'aasaam-Noto';
+  font-display: swap;
+  font-weight: 700;
+  src: url('../fonts/aasaam-NotoSansDisplay-Bold.#{$version}.woff2')
+      format('woff2'),
+    url('../fonts/aasaam-NotoSansDisplay-Bold.#{$version}.woff') format('woff');
+}
+@font-face {
+  font-family: 'aasaam-Noto';
+  font-display: swap;
+  font-weight: 400;
+  src: url('../fonts/aasaam-NotoSansDisplay-Regular.#{$version}.woff2')
+      format('woff2'),
+    url('../fonts/aasaam-NotoSansDisplay-Regular.#{$version}.woff')
+      format('woff');
+}
+@font-face {
+  font-family: 'aasaam-Noto';
+  font-display: swap;
+  font-weight: 700;
+  src: url('../fonts/aasaam-NotoSansArabicUI-Bold.#{$version}.woff2')
+      format('woff2'),
+    url('../fonts/aasaam-NotoSansArabicUI-Bold.#{$version}.woff') format('woff');
+  unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41,
+    U+FB50-FDFF, U+FE80-FEFC;
+}
+@font-face {
+  font-family: 'aasaam-Noto';
+  font-display: swap;
+  font-weight: 400;
+  src: url('../fonts/aasaam-NotoSansArabicUI-Regular.#{$version}.woff2')
+      format('woff2'),
+    url('../fonts/aasaam-NotoSansArabicUI-Regular.#{$version}.woff')
+      format('woff');
+  unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41,
+    U+FB50-FDFF, U+FE80-FEFC;
+}

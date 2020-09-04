@@ -1,0 +1,20 @@
+sudo: true
+dist: bionic
+language: go
+go:
+  - 1.x
+node_js:
+  - 14
+env:
+  - 'PATH=/home/travis/gopath/bin:$PATH'
+before_install:
+  - export WORK_DIR=$(pwd)
+  - cd $WORK_DIR/web
+  - npm install
+  - npm run lint
+  - node build/build.js
+  - cd $WORK_DIR
+  - go mod download
+  - go get -v -u github.com/mattn/goveralls
+  - go test -v -covermode=count -coverprofile=coverage.out
+  - goveralls -ignore=main.go -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN

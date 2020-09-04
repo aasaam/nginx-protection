@@ -1,0 +1,57 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background-color: #bdbdbd;
+  color: #424242;
+}
+
+progress.progress::-webkit-progress-bar,
+progress.progress::-moz-progress-bar {
+  transition: width 1s ease;
+}
+
+body > .card {
+  min-height: 80vh;
+}
+
+.logo {
+  .content {
+    margin: 0 auto;
+    padding: 32px 0 16px 0;
+    img {
+      width: 128px;
+      animation: fade-in-out 2s ease-in-out infinite;
+      margin: 32px 0;
+    }
+  }
+}
+@keyframes fade-in-out {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#footer {
+  padding: 16px 0;
+  font-size: 0.9em;
+  color: #757575;
+  a {
+    color: #757575;
+  }
+  svg {
+    width: 32px;
+    height: 32px;
+    margin-top: 16px;
+    path {
+      fill: #757575;
+    }
+  }
+}

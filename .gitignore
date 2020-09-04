@@ -1,0 +1,6 @@
+assets/
+.vscode/
+coverage.out
+go.sum
+nginx-protection
+tmp/

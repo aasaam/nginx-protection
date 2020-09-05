@@ -29,7 +29,7 @@ before_deploy:
   - export TRAVIS_TAG=$(date +'%Y%m%d%H%M%S')
   - git tag $TRAVIS_TAG
   - GOOS=linux GOARCH=amd64 go build
-  - tar -czf whois-json-linux-amd64.tgz whois-json
+  - tar -czf nginx-protection-linux-amd64.tgz nginx-protection
 
 deploy:
   provider: releases

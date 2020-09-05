@@ -1,0 +1,14 @@
+# /lib/systemd/system/nginx-protection.service
+[Unit]
+Description=Nginx Protection
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=www-data
+ExecStart=/usr/bin/nginx-protection webserver --private-key /etc/nginx-protection/key.pem --salt RANDOM-SALT
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

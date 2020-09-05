@@ -14,7 +14,7 @@ func RouterAuth(
 	router fiber.Router,
 	rsa *rsa.PrivateKey,
 ) {
-	router.Get("/auth", func(c *fiber.Ctx) {
+	router.All("/auth", func(c *fiber.Ctx) {
 		// prometheus
 		PrometheusRequestTotal.Inc()
 

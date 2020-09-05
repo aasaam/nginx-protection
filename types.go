@@ -35,6 +35,7 @@ type Config struct {
 	Salt    string
 	BaseURL string
 	Testing bool
+	Log     bool
 }
 
 // OTPConfig otp config

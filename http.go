@@ -35,6 +35,10 @@ func GetHTTPServer(config *Config, rsa *rsa.PrivateKey) *fiber.App {
 		ServerHeader:          "protection",
 	})
 
+	if config.Log {
+		srv.Use(middleware.Logger())
+	}
+
 	srv.Get("/metrics", func(c *fiber.Ctx) {
 		p(c.Fasthttp)
 	})

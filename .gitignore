@@ -2,5 +2,7 @@ assets/
 .vscode/
 coverage.out
 go.sum
+rice-box.go
 nginx-protection
+nginx-protection.tgz
 tmp/

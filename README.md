@@ -17,7 +17,7 @@ Layer 7 HTTP protection for DoS/DDoS.
 You will need the RSA key for encryption stateless Token for scaling the nginx/protection servers so generate the RSA private key via:
 
 ```bash
-openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt
+openssl genrsa -out path/to/key.pem 2048
 ```
 
 ## Usage
@@ -93,8 +93,8 @@ server {
 
     # proxy
     proxy_pass http://127.0.0.1:19000;
-    # proxy_pass_request_body off;
-    # proxy_set_header Content-Length "";
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
 
     # config
     proxy_set_header X-Forwarded-For $remote_addr;

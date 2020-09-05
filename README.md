@@ -12,10 +12,6 @@
 
 Layer 7 HTTP protection for DoS/DDoS.
 
-## Download
-
-Use [release](https://github.com/aasaam/nginx-protection/releases) to download the aasaam version.
-
 ## Installation
 
 You will need the RSA key for encryption stateless Token for scaling the nginx/protection servers so generate the RSA private key via:

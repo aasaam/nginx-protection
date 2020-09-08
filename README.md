@@ -17,7 +17,8 @@ Layer 7 HTTP protection for DoS/DDoS.
 You will need the RSA key for encryption stateless Token for scaling the nginx/protection servers so generate the RSA private key via:
 
 ```bash
-openssl genrsa -out path/to/key.pem 2048
+openssl genrsa -out /tmp/key.pem 2048
+openssl pkcs8 -topk8 -in /tmp/key.pem -out tmp/key.pem -nocrypt
 ```
 
 ## Usage

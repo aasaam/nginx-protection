@@ -68,10 +68,10 @@ server {
   set $protection_config_timeout '120';                                       # 3 to 300
   set $protection_config_wait '3';                                            # 3 to 120
   set $protection_config_otp_secret 'GAZWKZTDGEZTAMTC';                       # [A-Z0-9]{16}
-  set $protection_config_otp_time '60';                                       # 3 to 300
+  set $protection_config_otp_time '30';                                       # 3 to 300
   # 3rd party service
-  set $protection_config_sms_endpoint         'http://127.0.0.1:11200?mobile={{.Mobile}}&country={{.Country}}&token={{.Token}}';
-  set $protection_config_user_pass_endpoint   'http://127.0.0.1:11200?user={{.User}}&pass={{.Pass}}';
+  set $protection_config_sms_endpoint                                         'http://127.0.0.1:11200?mobile={{.Mobile}}&country={{.Country}}&token={{.Token}}';
+  set $protection_config_user_pass_endpoint                                   'http://127.0.0.1:11200?user={{.User}}&pass={{.Pass}}';
 
   # client configuration
   # token checksum during challenge most be most secure

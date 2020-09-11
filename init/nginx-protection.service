@@ -7,7 +7,8 @@ Wants=network.target
 [Service]
 Type=simple
 User=www-data
-ExecStart=/usr/bin/nginx-protection webserver --private-key /etc/nginx-protection/key.pem --salt RANDOM-SALT
+ExecStart=/usr/bin/nginx-protection webserver --listen 127.0.0.1:9121 --private-key /etc/nginx-protection/key.pem --salt RANDOM-SALT
+# ExecStart=/usr/bin/nginx-protection webserver --enable-log 1 --listen 127.0.0.1:9121 --private-key /etc/nginx-protection/key.pem --salt RANDOM-SALT
 Restart=always
 
 [Install]

@@ -4,5 +4,5 @@ coverage.out
 go.sum
 rice-box.go
 nginx-protection
-nginx-protection.tgz
+nginx-protection*
 tmp/

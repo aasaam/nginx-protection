@@ -121,6 +121,8 @@ const (
 	HTTPRequestHeaderConfigWait = "X-Protection-Config-Wait"
 	// HTTPRequestHeaderConfigCookie name of cookie for set token
 	HTTPRequestHeaderConfigCookie = "X-Protection-Config-Cookie"
+	// HTTPRequestHeaderConfigUnauthorizedStatus status code of unauthorized
+	HTTPRequestHeaderConfigUnauthorizedStatus = "X-Protection-Config-Unauthorized-Status"
 
 	// Client:
 

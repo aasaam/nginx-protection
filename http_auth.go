@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rsa"
 	"net/http"
+	"strconv"
 
 	"github.com/gofiber/fiber"
 	"github.com/prometheus/client_golang/prometheus"
@@ -69,9 +70,12 @@ func RouterAuth(
 			return
 		}
 
+		statusCodeHeader := c.Get(HTTPRequestHeaderConfigUnauthorizedStatus, "401")
+		statusCode, _ := strconv.ParseInt(statusCodeHeader, 10, 32)
+
 		// prometheus
 		PrometheusRejectTotal.Inc()
-		code := 401
+		code := int(statusCode)
 		c.Status(code).Send(http.StatusText(401))
 	})
 }

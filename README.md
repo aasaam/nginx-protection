@@ -18,7 +18,7 @@ You will need the RSA key for encryption stateless Token for scaling the nginx/p
 
 ```bash
 openssl genrsa -out /tmp/key.pem 2048
-openssl pkcs8 -topk8 -in /tmp/key.pem -out tmp/key.pem -nocrypt
+openssl pkcs8 -topk8 -in /tmp/key.pem -nocrypt -out tmp/key.pem
 ```
 
 ## Usage
@@ -50,40 +50,63 @@ server {
   server_name _;
 
   # config
-  set $enabled_auth_request '1';
+  set_if_empty $enabled_auth_request '1';
+  set_if_empty $protection_port 9121;
+  set_if_empty $protection_config_unauthorized_status 401;
 
   auth_request /.well-known/protection/auth;
 
   # client acl
-  set $protection_acl_countries '';                                           # comma separated iso country cokde eg 'IR,US'
-  set $protection_acl_cidrs '127.0.0.0/8';                                    # comma separated network cidr
-  set $protection_acl_asns '15169,13414';                                     # comma separated asn
-  set $protection_acl_api_keys '{"rest_client_a":"this-is-api-key"}';         # json object key is organization name and value is the key
+  # comma separated iso country cokde eg 'IR,US'
+  set_if_empty $protection_acl_countries '';
+  # comma separated network cidr like '127.0.0.0/8,192.168.0.0/16'
+  set_if_empty $protection_acl_cidrs '';
+  # example search for asn: https://www.google.com/search?q=site:ipinfo.io+google
+  # comma separated asn like: '15169,13414,32934'
+  # google: 15169
+  # facebook: 32934
+  # twitter: 13414
+  # telegram: 42383,44907,62014,62041
+  set_if_empty $protection_acl_asns '';
+  # json object key is organization name and value is the key
+  set_if_empty $protection_acl_api_keys '';
 
   # configuration
-  set $protection_config_lang 'fa';                                           # en or fa
-  set $protection_config_cookie 'prt';                                        # small string
-  set $protection_config_challenge 'js';                                      # js, captcha, otp, sms, user-pass
-  set $protection_config_farsi_captcha '1';                                   # 1, 0
-  set $protection_config_ttl '86400';                                         # 60 to 604800
-  set $protection_config_timeout '120';                                       # 3 to 300
-  set $protection_config_wait '3';                                            # 3 to 120
-  set $protection_config_otp_secret 'GAZWKZTDGEZTAMTC';                       # [A-Z0-9]{16}
-  set $protection_config_otp_time '30';                                       # 3 to 300
+  # en or fa
+  set_if_empty $protection_config_lang 'fa';
+  # small string
+  set_if_empty $protection_config_cookie 'prt';
+  # js, captcha, otp, sms, user-pass
+  set_if_empty $protection_config_challenge 'js';
+  # 1, 0
+  set_if_empty $protection_config_farsi_captcha '1';
+  # 60 to 604800
+  set_if_empty $protection_config_ttl '86400';
+  # 3 to 300
+  set_if_empty $protection_config_timeout '120';
+  # 3 to 120
+  set_if_empty $protection_config_wait '3';
+  # [A-Z0-9]{16}
+  set_if_empty $protection_config_otp_secret '';
+  # 3 to 300
+  set_if_empty $protection_config_otp_time '30';
+
   # 3rd party service
-  set $protection_config_sms_endpoint                                         'http://127.0.0.1:11200?mobile={{.Mobile}}&country={{.Country}}&token={{.Token}}';
-  set $protection_config_user_pass_endpoint                                   'http://127.0.0.1:11200?user={{.User}}&pass={{.Pass}}';
+  set_if_empty $protection_config_sms_endpoint 'http://127.0.0.1:11200?mobile={{.Mobile}}&country={{.Country}}&token={{.Token}}';
+  set_if_empty $protection_config_user_pass_endpoint 'http://127.0.0.1:11200?user={{.User}}&pass={{.Pass}}';
 
   # client configuration
   # token checksum during challenge most be most secure
-  set $protection_client_token_checksum "$remote_addr:$http_user_agent:$protection_config_challenge:$http_host";
+  set_if_empty $protection_client_token_checksum "$remote_addr:$http_user_agent:$protection_config_challenge:$uid_got$uid_set";
 
   # client checksum for later validation
-  # hard
-  set $protection_client_checksum "$remote_addr:$http_user_agent:$protection_config_challenge";
-  # easy
-  # set $protection_client_checksum "$http_user_agent:$protection_config_challenge";
-  # geo
+  # level:3 / hard
+  # set_if_empty $protection_client_checksum "$remote_addr:$http_user_agent:$protection_config_challenge:$uid_got$uid_set";
+  # level:2 / medium
+  # set_if_empty $protection_client_checksum "$remote_addr:$http_user_agent:$protection_config_challenge";
+  # level:1 / easy
+  set_if_empty $protection_client_checksum "$http_user_agent:$protection_config_challenge";
+
   set $protection_client_country "IR";
   set $protection_client_asn_num "44244,44243";
   set $protection_client_asn_org "Sample Orgnaization";
@@ -91,9 +114,10 @@ server {
   # auth request
   location = /.well-known/protection/auth {
     internal;
+    access_log off;
 
     # proxy
-    proxy_pass http://127.0.0.1:19000;
+    proxy_pass http://127.0.0.1:$protection_port;
     proxy_pass_request_body off;
     proxy_set_header Content-Length "";
 
@@ -110,6 +134,7 @@ server {
     proxy_set_header X-Protection-Config-Cookie $protection_config_cookie;
     proxy_set_header X-Protection-Config-SMS-Endpoint $protection_config_sms_endpoint;
     proxy_set_header X-Protection-Config-User-Pass-Endpoint $protection_config_user_pass_endpoint;
+    proxy_set_header X-Protection-Config-Unauthorized-Status $protection_config_unauthorized_status;
 
     # client
     proxy_set_header X-Protection-Client-Token-Checksum $protection_client_token_checksum;
@@ -127,17 +152,18 @@ server {
     auth_request_set $auth_response_protection_status $upstream_http_x_protection_status;
     auth_request_set $auth_response_protection_mode $upstream_http_x_protection_status_mode;
     auth_request_set $auth_response_protection_extra $upstream_http_x_protection_status_extra;
-    auth_request_set $auth_user $upstream_http_x_protection_user;
+    auth_request_set $auth_user_id $upstream_http_x_protection_user;
   }
 
   location ~ ^/.well-known/protection/challenge {
     # proxy
-    proxy_pass http://127.0.0.1:19000;
+    proxy_pass http://127.0.0.1:$protection_port;
 
     auth_request off;
+
     # http flood prevent
-    limit_req zone=req_limit_per_ip burst=10 nodelay;
-    limit_conn conn_limit_per_ip 30;
+    limit_req zone=protection_req_limit_per_ip burst=10 nodelay;
+    limit_conn protection_conn_limit_per_ip 30;
 
     # config
     proxy_set_header X-Forwarded-For $remote_addr;
@@ -152,6 +178,7 @@ server {
     proxy_set_header X-Protection-Config-Cookie $protection_config_cookie;
     proxy_set_header X-Protection-Config-SMS-Endpoint $protection_config_sms_endpoint;
     proxy_set_header X-Protection-Config-User-Pass-Endpoint $protection_config_user_pass_endpoint;
+    proxy_set_header X-Protection-Config-Unauthorized-Status $protection_config_unauthorized_status;
 
     # client
     proxy_set_header X-Protection-Client-Token-Checksum $protection_client_token_checksum;
@@ -170,11 +197,21 @@ server {
     return 302 /.well-known/protection/challenge?url=$request_uri;
   }
 
+  # or js redirect
+  # location @error401 {
+  #  add_header 'X-Robots-Tag' 'noindex' always;
+  #  add_header 'Content-Type' 'text/html; charset=utf-8' always;
+  #  more_set_headers 'X-Robots-Tag' 'noindex';
+  #  more_set_headers 'Content-Type' 'text/html; charset=utf-8';
+  #  return 200 "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Please wait...</title><meta name=\"robots\" content=\"noindex\"><link rel=\"icon\" href=\"data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==\"><script>setTimeout(function(){window.location.href=\"/.well-known/protection/challenge?url=$request_uri\"},2e3);</script><style>@keyframes anim{0%,100%,80%{transform:scale(0)}40%{transform:scale(1)}}body,html{width:100%;height:100%;padding:0;margin:0;background-color:#fff}.spn{margin:0 auto;padding:128px 0 0 0;padding-top:25vh;width:128px;text-align:center}.spn>div{width:32px;height:32px;background-color:#263238;border-radius:100%;display:inline-block;animation:anim 1.4s infinite ease-in-out both}.spn .bn1{animation-delay:-.32s}.spn .bn2{animation-delay:-.16s}</style></head><body><div class=\"spn\"><div class=\"bn1\"></div><div class=\"bn2\"></div><div></div></div></body></html>";
+  # }
+
+
   location / {
-    auth_request_set $auth_response_protection_status $upstream_http_x_protection_status;
-    auth_request_set $auth_response_protection_user $auth_response_protection_user;
-    add_header X-protection-Status $auth_response_protection_status;
-    add_header X-protection-User $auth_response_protection_user;
+    auth_request_set $auth_response_protection_status $auth_response_protection_status;
+    auth_request_set $auth_user_id $auth_user_id;
+    add_header X-Protection-Status $auth_response_protection_status;
+    add_header X-Protection-User $auth_user_id;
     proxy_pass http://127.0.0.1:21000;
   }
 }
@@ -184,7 +221,7 @@ server {
 
   location / {
     add_header 'Content-Type' 'text/plain';
-    return 200 "ok";
+    return 200 "OK";
   }
 }
 

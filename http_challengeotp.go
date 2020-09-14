@@ -106,6 +106,7 @@ func RouterOTP(
 			authToken := AuthToken{}
 			authToken.Checksum = clientCheckSum
 			authToken.Type = challenge.Type
+			authToken.User = "protection-otp"
 
 			tokenValue, err := GenerateAuthToken(authToken, ttlSeconds, config.Salt, rsa)
 

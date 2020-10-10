@@ -155,6 +155,57 @@ func TestHTTPHelpersGetFarsiCaptcha(t *testing.T) {
 		t.Errorf("Status must be 200")
 	}
 }
+func TestHTTPHelpersOTP(t *testing.T) {
+	config := Config{}
+	config.BaseURL = "/.well-known/protection"
+	config.Salt = "0123456789"
+
+	rsa, _ := LoadPrivateKey([]byte(pv1))
+	app := GetHTTPServer(&config, rsa)
+
+	app.Get("/otp-check", func(c *fiber.Ctx) {
+		isFarsiCaptcha, err := GetOTPSecret(c)
+		if err != nil {
+			return
+		}
+
+		protectionStatus := NewProtectionStatus()
+		protectionStatus.SetStatus("ok")
+		protectionStatus.SetType("type")
+		protectionStatus.AddExtra("extra", "ok")
+		protectionStatus.AddToResponse(c)
+
+		c.Send(isFarsiCaptcha)
+	})
+
+	req1 := httptest.NewRequest("GET", "/otp-check", nil)
+	resp1, _ := app.Test(req1)
+	if resp1.StatusCode != 500 {
+		t.Errorf("Status must be 500")
+	}
+
+	req11 := httptest.NewRequest("GET", "/otp-check", nil)
+	req11.Header.Set(HTTPRequestHeaderConfigOTPTime, "1")
+	req11.Header.Set(HTTPRequestHeaderConfigOTPSecret, "GZRGGOJYHFRGMMJY")
+	resp11, _ := app.Test(req11)
+	if resp11.StatusCode != 500 {
+		t.Errorf("Status must be 500")
+	}
+
+	req112 := httptest.NewRequest("GET", "/otp-check", nil)
+	req112.Header.Set(HTTPRequestHeaderConfigOTPSecret, "GZRGGOJYHFRGMMJY")
+	resp112, _ := app.Test(req112)
+	if resp112.StatusCode != 500 {
+		t.Errorf("Status must be 500")
+	}
+	req2 := httptest.NewRequest("GET", "/otp-check", nil)
+	req2.Header.Set(HTTPRequestHeaderConfigOTPTime, "60")
+	req2.Header.Set(HTTPRequestHeaderConfigOTPSecret, "GZRGGOJYHFRGMMJY")
+	resp2, _ := app.Test(req2)
+	if resp2.StatusCode != 200 {
+		t.Errorf("Status must be 200")
+	}
+}
 
 func TestHTTPHelpersGetChallengeType(t *testing.T) {
 	config := Config{}

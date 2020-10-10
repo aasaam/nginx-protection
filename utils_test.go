@@ -11,6 +11,10 @@ func TestMD5(t *testing.T) {
 	}
 }
 
+func TestGenerateOTPSecret(t *testing.T) {
+	GenerateOTPSecret()
+}
+
 func TestRandomHex(t *testing.T) {
 	v1 := RandomHex()
 	v2 := RandomHex()

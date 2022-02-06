@@ -1,75 +1,81 @@
 package main
 
 import (
-	"crypto/md5"
+	"crypto/rand"
 	"crypto/sha512"
 	"encoding/base32"
+	"encoding/base64"
 	"encoding/hex"
-	"math/rand"
-	"reflect"
-	"time"
+	"fmt"
+	"net/url"
 )
 
-// IsValidLanguage check for supporeted challenge
-func IsValidLanguage(lang string) bool {
-	supportedLanguage := reflect.ValueOf(SupportedLanguage)
+var noPadding rune = -1
 
-	for i := 0; i < supportedLanguage.Len(); i++ {
-		if supportedLanguage.Index(i).Interface() == lang {
-			return true
-		}
-	}
-
-	return false
+func isValidChallenge(challenge string) bool {
+	return supportedChallengesMap[challenge]
 }
 
-// GenerateOTPSecret return random generated OTP secret
-func GenerateOTPSecret() string {
-	data := []byte(RandomHex())
-
-	str := base32.StdEncoding.EncodeToString(data)
-
-	return str[0:16]
+func hashHex(s string) string {
+	h := sha512.New()
+	h.Write([]byte(s))
+	return hex.EncodeToString(h.Sum(nil))
 }
 
-// IsValidChallenge check for supporeted challenge
-func IsValidChallenge(challenge string) bool {
-	supportedChallenge := reflect.ValueOf(SupportedChallenges)
-
-	for i := 0; i < supportedChallenge.Len(); i++ {
-		if supportedChallenge.Index(i).Interface() == challenge {
-			return true
-		}
-	}
-
-	return false
+func base64Hash(s string) string {
+	h := sha512.New()
+	h.Write([]byte(s))
+	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }
 
-// RandomCaptchaLetters return random letters for captcha
-func RandomCaptchaLetters() string {
-	rand.Seed(time.Now().UnixNano())
-	b := make([]rune, 6)
-	for i := range b {
-		b[i] = CaptchaLetters[rand.Intn(len(CaptchaLetters))]
-	}
-	return string(b)
-}
-
-// RandomHex generate random hex
-func RandomHex() string {
-	rand.Seed(time.Now().UnixNano())
-	bytes := make([]byte, 32)
-	if _, err := rand.Read(bytes); err != nil {
-		panic(err)
+func randomBase64() string {
+	b := make([]byte, 512)
+	_, err := rand.Read(b)
+	if err != nil {
+		panic(err.Error())
 	}
 	hash := sha512.New()
-	hash.Write(bytes)
-	return hex.EncodeToString(hash.Sum(nil))
+	hash.Write(b)
+	return base64.StdEncoding.EncodeToString(hash.Sum(nil))
 }
 
-// MD5 return md5 of input string
-func MD5(input string) string {
-	hash := md5.New()
-	hash.Write([]byte(input))
-	return hex.EncodeToString(hash.Sum(nil))
+func minMaxDefault64(value int64, min int64, max int64) int64 {
+	if value < min {
+		return min
+	}
+	if value > max {
+		return max
+	}
+
+	return value
+}
+
+func minMaxDefault(value int, min int, max int) int {
+	if value < min {
+		return min
+	}
+	if value > max {
+		return max
+	}
+
+	return value
+}
+
+func totpGenerate() string {
+	b := make([]byte, 512)
+	_, err := rand.Read(b)
+	if err != nil {
+		panic(err.Error())
+	}
+	hash := sha512.New()
+	hash.Write(b)
+	enc := base32.StdEncoding.WithPadding(noPadding)
+	return enc.EncodeToString(hash.Sum(nil))[0:16]
+}
+
+func getURLPath(u *url.URL) string {
+	if u.RawQuery != "" {
+		return fmt.Sprintf("%s?%s", u.Path, u.RawQuery)
+	}
+	return u.Path
 }

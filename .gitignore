@@ -1,8 +1,6 @@
-assets/
-.vscode/
-coverage.out
+# Copyright (c) 2021 aasaam software development group
+coverage.*
 go.sum
-rice-box.go
+tmp/
 nginx-protection
 nginx-protection*
-tmp/

@@ -1,15 +1,3 @@
-/node_modules/
-/.vscode/
+# Copyright (c) 2021 aasaam software development group
 package-lock.json
-/.server/
-
-/public/fonts
-/public/images
-/tmp/
-
-/public/js/_*
-/public/css/*.css
-/public/css/__*
-/public/*.html
-
-/version.js
+node_modules/

@@ -4,53 +4,45 @@ import (
 	"testing"
 )
 
-func TestMD5(t *testing.T) {
-	hash := MD5("1")
-	if hash != "c4ca4238a0b923820dcc509a6f75849b" {
-		t.Errorf("Invalid md5")
+func TestUtils1(t *testing.T) {
+	if isValidChallenge("i'm sure not exist") {
+		t.Errorf("invalid")
 	}
+
+	if !isValidChallenge(challengeTypeJS) {
+		t.Errorf("invalid")
+	}
+
+	base64Hash("")
+	hashHex("")
+	totpGenerate()
 }
 
-func TestGenerateOTPSecret(t *testing.T) {
-	GenerateOTPSecret()
-}
-
-func TestRandomHex(t *testing.T) {
-	v1 := RandomHex()
-	v2 := RandomHex()
-	if v1 == v2 {
-		t.Errorf("RandomHex must be uniq")
+func TestMinMaxDefault64(t *testing.T) {
+	v1 := minMaxDefault64(1, 10, 20)
+	if v1 != 10 {
+		t.Errorf("invalid min")
+	}
+	v2 := minMaxDefault64(30, 10, 20)
+	if v2 != 20 {
+		t.Errorf("invalid max")
+	}
+	v3 := minMaxDefault64(30, 10, 50)
+	if v3 != 30 {
+		t.Errorf("invalid value")
 	}
 }
-func TestRandomCaptchaLetters(t *testing.T) {
-	v1 := RandomCaptchaLetters()
-	v2 := RandomCaptchaLetters()
-	if v1 == v2 {
-		t.Errorf("RandomCaptchaLetters must be uniq")
+func TestMinMaxDefault(t *testing.T) {
+	v1 := minMaxDefault(1, 10, 20)
+	if v1 != 10 {
+		t.Errorf("invalid min")
 	}
-}
-
-func TestIsValidLanguage(t *testing.T) {
-	true1 := IsValidLanguage("en")
-	true2 := IsValidLanguage("fa")
-	if true1 != true || true2 != true {
-		t.Errorf("Valid langauge must be true")
+	v2 := minMaxDefault(30, 10, 20)
+	if v2 != 20 {
+		t.Errorf("invalid max")
 	}
-	false1 := IsValidLanguage("xx")
-	false2 := IsValidLanguage("00")
-	if false1 != false || false2 != false {
-		t.Errorf("Invalid langauge must be false")
-	}
-}
-func TestIsValidChallenge(t *testing.T) {
-	true1 := IsValidChallenge(ChallengeTypeJS)
-	true2 := IsValidChallenge(ChallengeTypeCaptcha)
-	if true1 != true || true2 != true {
-		t.Errorf("Valid challenge must be true")
-	}
-	false1 := IsValidChallenge(ChallengeTypeJS + "xx")
-	false2 := IsValidChallenge(ChallengeTypeCaptcha + "00")
-	if false1 != false || false2 != false {
-		t.Errorf("Invalid challenge must be false")
+	v3 := minMaxDefault(30, 10, 50)
+	if v3 != 30 {
+		t.Errorf("invalid value")
 	}
 }

@@ -3,68 +3,38 @@ package main
 import (
 	"testing"
 	"time"
+
+	aesGo "github.com/aasaam/aes-go"
+	"github.com/pquerna/otp"
+	"github.com/pquerna/otp/totp"
 )
 
-func TestNewChallenge1(t *testing.T) {
-	challengeChecksum := "random"
-	challengeType := ChallengeTypeJS
-	ch1 := NewChallenge(challengeType, challengeChecksum, 1, 3)
-	if ch1.Validate(challengeType, challengeChecksum) == true {
-		t.Errorf("Wait time not passed so it's must be false")
+func TestChallenge(t *testing.T) {
+	secret := aesGo.GenerateKey()
+	ch1 := newChallenge("fa", challengeTypeBlock, secret, secret, 1, 2, 3)
+	ch1.setJSValue()
+	ch1.CaptchaChallengeValue = 10000
+	totpSecret := totpGenerate()
+	ch1.setTOTPSecret(totpSecret)
+	str, _ := ch1.getChallengeToken(secret)
+	ch2, _ := newChallengeFromString(str, secret)
+	if ch2.JSChallengeValue != ch1.JSChallengeValue {
+		t.Errorf("invalid token check")
 	}
-	time.Sleep(time.Second * 2)
-	if ch1.Validate(ChallengeTypeCaptcha, challengeChecksum) == true {
-		t.Errorf("Type is not the same")
+	if !ch2.verifyJSValue(ch1.JSChallengeValue) {
+		t.Errorf("invalid token js")
 	}
-	if ch1.Validate(challengeType, "other") == true {
-		t.Errorf("Checksum is not the same")
-	}
-	if ch1.Validate(challengeType, challengeChecksum) == false {
-		t.Errorf("Wait time passed so it's must be true")
-	}
-}
-
-func TestChallengeJSON(t *testing.T) {
-	challengeChecksum := "random"
-	challengeType := ChallengeTypeJS
-	ch1 := NewChallenge(challengeType, challengeChecksum, 1, 3)
-	json := ch1.JSON()
-	ch2, err := ChallengeFromJSON(json)
-	if err != nil || ch1.Checksum != ch2.Checksum {
-		t.Errorf("Challenge json error or not equal after serialize/deserialize")
+	if !ch2.verifyCaptchaValue(ch1.CaptchaChallengeValue) {
+		t.Errorf("invalid token js")
 	}
 
-	_, err1 := ChallengeFromJSON("invali")
-	if err1 == nil {
-		t.Errorf("invalid json must throw an error")
-	}
-}
-func TestGenerateJSChallenge(t *testing.T) {
-	challengeChecksum := "random"
-	challengeType := ChallengeTypeJS
-	ch1 := NewChallenge(challengeType, challengeChecksum, 1, 3)
-	if ch1.HasResult() == true {
-		t.Errorf("No result")
-	}
-	ch1.GenerateJSChallenge()
-	if ch1.HasResult() == false {
-		t.Errorf("No result")
-	}
-	if ch1.Result == "" || ch1.Content == "" {
-		t.Errorf("Result and content must be set")
-	}
-}
-func TestGenerateCaptchaChallenge(t *testing.T) {
-	challengeChecksum := "random"
-	challengeType := ChallengeTypeJS
-	ch1 := NewChallenge(challengeType, challengeChecksum, 1, 3)
-	ch1.GenerateCaptchaChallenge(true)
-	ch2 := NewChallenge(challengeType, challengeChecksum, 1, 3)
-	ch2.GenerateCaptchaChallenge(false)
-	if ch1.Result == "" || ch1.Content == "" {
-		t.Errorf("Result and content must be set")
-	}
-	if ch2.Result == "" || ch2.Content == "" {
-		t.Errorf("Result and content must be set")
+	passCode, _ := totp.GenerateCodeCustom(ch1.TOTPSecret, time.Now(), totp.ValidateOpts{
+		Skew:      1,
+		Digits:    otp.DigitsSix,
+		Algorithm: otp.AlgorithmSHA1,
+	})
+
+	if !ch2.verifyTOTP(passCode) {
+		t.Errorf("invalid token totp")
 	}
 }

@@ -5,7 +5,10 @@
     "browser": true,
     "node": true
   },
-  "plugins": ["sonarjs", "prettier"],
+  "plugins": [
+    "sonarjs",
+    "prettier"
+  ],
   "extends": [
     "plugin:sonarjs/recommended",
     "airbnb",

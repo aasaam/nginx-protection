@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html dir="[[.dir]]" lang="[[.lang]]" data-ng-app="p">
+  <head>
+    <meta charset="utf-8" />
+    <title>[[.title]] - [[.organizationTitle]]</title>
+    <link rel="preload" href="[[.staticURL]]/js/lib.js" as="script" />
+    <link rel="preload" href="[[.staticURL]]/js/[[.challengeType]].js" as="script" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <script>
+      var config = {
+        ipData: [[unescapeJS .ipData]],
+        supportInfo: [[unescapeJS .supportInfo]],
+        challengeToken: '[[.challengeToken]]',
+        lang: '[[.lang]]',
+        protectedPath: '[[.protectedPath]]',
+        waitSeconds: '[[.waitSeconds]]',
+        challengeType: '[[.challengeType]]',
+        baseURL: '[[.baseURL]]',
+      };
+    </script>
+    <link rel="stylesheet" href="[[.staticURL]]/css/main-[[.dir]].css" />
+    <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAEUlEQVR42mNkIAAYRxWMJAUAE5gAEdz4t9QAAAAASUVORK5CYII=" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2020%2020'%3E%3Ctext%20x='0'%20y='16'%3E[[.challengeEmoji]]%3C/text%3E%3C/svg%3E" type="image/svg+xml" />
+  </head>
+  <body>
+    <div id="app" style="display: none">
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container">
+            <p class="has-text-centered py-2">
+<!-- [[ if .cdnStatic ]] -->
+              <img
+                width="64"
+                class="mb-3"
+                src="https://cdn.jsdelivr.net/gh/aasaam/brand-icons/svg/[[.organizationBrandIcon]].svg"
+                alt="[[.organizationTitle]]"
+              />
+              <br />
+<!-- [[ else if .aasaamWebServer ]] -->
+              <img
+                width="64"
+                class="mb-3"
+                src="/.well-known/aasaam/brand_icons/[[.organizationBrandIcon]].svg"
+                alt="[[.organizationTitle]]"
+              />
+              <br />
+<!-- [[ end ]] -->
+              <strong> [[.organizationTitle]] </strong>
+            </p>
+          </div>
+        </div>
+      </section>
+      <div class="container px-2" data-ng-controller="[[.challengeType]]">
+        <div class="columns">
+          <div class="column is-2"></div>
+          <div class="column is-8">
+            <div class="card">[[embed]]</div>
+            <hr />
+            <div class="card">
+              <div class="card-content">
+                <div class="content">
+                  <div class="table-container">
+                    <table class="table is-fullwidth is-hoverable">
+                      <thead>
+                        <tr data-ng-if="config.supportInfo.email || config.supportInfo.tel || config.supportInfo.url">
+                          <th class="is-success" colspan="2">[[ .i18n.administratorContactInfo ]]</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr data-ng-if="config.supportInfo.email">
+                          <td>📧 [[ .i18n.supportEmail ]]</td>
+                          <td dir="ltr">
+                            <a href="{{ mailTo() }}">
+                              <span dir="ltr">{{ config.supportInfo.email }}</span>
+                            </a>
+                          </td>
+                        </tr>
+                        <tr data-ng-if="config.supportInfo.url">
+                          <td>📝 [[ .i18n.supportURL ]]</td>
+                          <td dir="ltr">
+                            <a href="{{ urlSupport() }}">
+                              <span dir="ltr">{{ config.supportInfo.url }}</span>
+                            </a>
+                          </td>
+                        </tr>
+                        <tr data-ng-if="config.supportInfo.tel">
+                          <td>📞 [[ .i18n.supportTel ]]</td>
+                          <td dir="ltr">
+                            <a href="tel:{{ config.supportInfo.tel }}">
+                              <span dir="ltr">{{ config.supportInfo.tel }}</span>
+                            </a>
+                          </td>
+                        </tr>
+                        <thead>
+                          <tr>
+                            <th class="is-link" colspan="2">[[ .i18n.networkInformation ]]</th>
+                          </tr>
+                        </thead>
+                        <tr data-ng-if="config.ipData.country">
+                          <td>[[ .i18n.yourCountry ]]</td>
+                          <td dir="ltr">
+                            {{ getCountryFlag(config.ipData.country) }} {{ getCountryName(config.ipData.country) }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>[[ .i18n.yourIP ]]</td>
+                          <td dir="ltr">
+                            <span class="is-family-code">{{ config.ipData.ip }}</span>
+                          </td>
+                        </tr>
+                        <tr data-ng-if="config.ipData.asn">
+                          <td>[[ .i18n.yourASN ]]</td>
+                          <td dir="ltr">
+                            <span class="is-family-code"> {{ config.ipData.asn }} ({{ config.ipData.asn_org }}) </span>
+                          </td>
+                        </tr>
+                        <tr data-ng-if="config.ipData.nodeID">
+                          <td>[[ .i18n.yourNodeID ]]</td>
+                          <td dir="ltr">
+                            <span class="is-family-code">{{ config.ipData.nodeID }}</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>[[ .i18n.yourChecksum ]]</td>
+                          <td dir="ltr">
+                            <input dir="ltr" class="input is-small" type="text" readonly value="[[.persistChecksum]]" />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container py-5">
+        <hr />
+        <div id="footer">
+<!-- [[ if .multiLanguage ]] -->
+          <ul>
+            [[ range $lang, $title := .languageData ]]
+            <li>
+              <a href="?lang=[[ $lang ]]"> [[ $title ]] </a>
+            </li>
+            [[ end ]]
+          </ul>
+<!-- [[ end ]] -->
+          <p lang="en" dir="ltr">
+            Powered by
+            <a href="https://aasaam.com" rel="nofollow"> aasaam software development group </a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <script src="[[.staticURL]]/js/lib.js"></script>
+    <script src="[[.staticURL]]/js/[[.challengeType]].js"></script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+<header class="card-header has-background-info-dark">
+  <p class="card-header-title is-size-4 has-text-light">[[ .i18n.js ]]</p>
+</header>
+<div class="card-content">
+  <div class="content">
+    <div class="columns">
+      <div class="column is-2"></div>
+      <div class="column is-8">
+        <div class="py-3">
+          <p>[[ .i18n.jsChallengeDescription ]]</p>
+        </div>
+        <div class="py-3">
+          <progress
+            class="progress is-small is-info"
+            data-ng-class="{'is-info' : progress < 100, 'is-success': progress >= 100}"
+            value="{{ progress }}"
+            max="100"
+          ></progress>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

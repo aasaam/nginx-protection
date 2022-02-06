@@ -1,0 +1,36 @@
+block: دسترسی امکان پذیر نیست
+blockDescription: |
+  طبق
+  <strong>مشخصات شبکه شما</strong>
+  دسترسی به این سامانه امکان پذیر نمی باشد.
+  <br />
+  برای اطلاعات بیشتر می‌توانید با
+  <strong>بخش فنی</strong>
+  سامانه تماس بگیرید.
+administratorContactInfo: اطلاعات تماس با بخش فنی
+supportEmail: ایمیل
+supportTel: شماره تماس
+supportURL: آدرس اینترنتی
+yourCountry: کشور
+yourIP: IP
+yourASN: ISP
+yourChecksum: Checksum
+yourNodeID: Node ID
+networkInformation: مشخصات شبکه شما
+validationFailed: اعتبار سنجی موفق آمیز نیست. لطفا کمی صبر کنید و مجددا تلاش نمایید.
+
+js: بررسی مرورگر
+jsChallengeDescription: برای بررسی مرورگر کمی صبر کنید...
+
+captcha: بررسی ربات
+captchaLabel: عدد نمایش داده شده در تصویر
+captchaChallengeDescription: لطفا کمی صبر کنید...
+captchaChallengeFill: عدد نشان داده شده در تصویر را وارد نمایید
+
+totp: رمز عبور یکبارمصرف
+totpLabel: رمز عبور کوتاه مدت
+totpChallengeDescription: لطفا کمی صبر کنید...
+totpChallengeFill: رمز عبور خود را وارد نمایید
+
+reload: بارگزاری مجدد
+submit: ارسال

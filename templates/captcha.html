@@ -1,0 +1,80 @@
+<header class="card-header has-background-info-dark">
+  <p class="card-header-title is-size-4 has-text-light">[[ .i18n.captcha ]]</p>
+</header>
+<div class="card-content">
+  <div class="content" data-ng-if="progress < 100">
+    <div class="py-3">
+      <p>[[ .i18n.captchaChallengeDescription ]]</p>
+    </div>
+    <div class="py-3">
+      <progress
+        class="progress is-small is-info"
+        data-ng-class="{'is-info' : progress < 100, 'is-success': progress >= 100}"
+        value="{{ progress }}"
+        max="100"
+      ></progress>
+    </div>
+  </div>
+  <div class="content" data-ng-if="progress >= 100">
+    <div class="columns">
+      <div class="column is-2"></div>
+      <div class="column is-8">
+        <div class="py-3">
+          <p>[[ .i18n.captchaChallengeFill ]]</p>
+          <p>
+            <img
+              class="image captcha"
+              src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+              data-ng-src="{{ captcha }}"
+            />
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="columns">
+      <div class="column is-2"></div>
+      <div class="column is-8">
+        <article class="message is-danger" data-ng-if="failed">
+          <div class="message-body">[[ .i18n.validationFailed ]]</div>
+        </article>
+        <form name="main" data-ng-submit="solve($event)" data-ng-if="!failed">
+          <div class="field">
+            <div class="control">
+              <input
+                id="inputCaptcha"
+                name="captcha"
+                pattern="[0-9]{5,7}"
+                required
+                data-ng-model="formData.captchaValue"
+                data-ng-keypress="($event.charCode === 13 ) ? solve($event) : return"
+                inputmode="numeric"
+                class="input is-large"
+                data-ng-class="{'is-danger': main.captcha.$touched && main.captcha.$invalid, 'is-success': main.captcha.$touched && main.captcha.$valid }"
+                type="text"
+                placeholder="[[ .i18n.captchaLabel ]]"
+              />
+            </div>
+          </div>
+          <div
+            class="field is-grouped is-grouped-centered is-justify-content-space-around is-align-items-center"
+          >
+            <div class="control">
+              <button class="button" data-ng-click="reload()">
+                [[ .i18n.reload ]]
+              </button>
+            </div>
+            <div class="control">
+              <button
+                class="button is-success is-large"
+                data-ng-disabled="main.$invalid"
+                data-ng-click="solve($event)"
+              >
+                [[ .i18n.submit ]]
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

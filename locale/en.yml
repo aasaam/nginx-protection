@@ -1,0 +1,33 @@
+block: Access denied
+blockDescription: |
+  According to <strong>your network information</strong> your access is block by administrator.
+  <br />
+  For more information call administrators.
+administratorContactInfo: Administrator contact information
+supportEmail: EMail
+supportTel: Telephone
+supportURL: URL
+yourCountry: Country
+yourIP: IP
+yourASN: ISP
+yourChecksum: Checksum
+yourNodeID: Node ID
+networkInformation: Your network information
+validationFailed: Validation process failed. please wait for retrying...
+
+
+js: Checking browser
+jsChallengeDescription: Please wait to verify your browser...
+
+captcha: Bot detection
+captchaLabel: Number in image
+captchaChallengeDescription: Please wait to process request...
+captchaChallengeFill: Fill the input with number that show in image
+
+totp: Time-Based One-Time Password (TOTP)
+totpLabel: One Time Password
+totpChallengeDescription: Please wait to process request...
+totpChallengeFill: Fill the input with your special password
+
+reload: Reload
+submit: Submit

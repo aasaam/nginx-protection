@@ -1,0 +1,16 @@
+# Copyright (c) 2021 aasaam software development group
+version: '3'
+
+services:
+  protection-nginx-test:
+    container_name: protection-nginx-test
+    image: nginx:1
+    network_mode: host
+    volumes:
+      - ./test/nginx-dev.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/static:ro
+  protection-rest-captcha-test:
+    container_name: protection-rest-captcha-test
+    image: ghcr.io/aasaam/rest-captcha:latest
+    network_mode: host
+    command: -test-image -return-value

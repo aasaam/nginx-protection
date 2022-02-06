@@ -2,147 +2,158 @@ package main
 
 import (
 	"bytes"
-	"crypto/rc4"
 	"encoding/base64"
 	"encoding/json"
-	"image/color"
-	"image/jpeg"
-	"math/rand"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	"time"
 
-	"github.com/afocus/captcha"
+	aesGo "github.com/aasaam/aes-go"
+	"github.com/pquerna/otp"
+	"github.com/pquerna/otp/totp"
 )
 
-// Challenge is challenge will be encrypted
-type Challenge struct {
-	Type      string `json:"type"`
-	Checksum  string `json:"checksum"`
-	StartTime int64  `json:"start_time"`
-	EndTime   int64  `json:"start_end"`
-	User      string `json:"user"`
-	Pass      string `json:"pass"`
-	Mobile    string `json:"mobile"`
-	Country   string `json:"country"`
-	Result    string `json:"result"`
-	Content   string `json:"content"`
+type captchaRequest struct {
+	Lang            string `json:"lang,omitempty"`
+	Quality         int    `json:"quality,omitempty"`
+	DifficultyLevel string `json:"level,omitempty"`
 }
 
-// NewChallenge is create new challenge
-func NewChallenge(challengeType string, checksum string, wait int64, ttl int64) Challenge {
-
-	challenge := Challenge{}
-	challenge.Type = challengeType
-	challenge.Checksum = checksum
-	challenge.Result = ""
-	challenge.Content = ""
-
-	t := time.Now().UTC()
-	StartTime := t.Add(time.Second * time.Duration(wait))
-
-	EndTime := t.Add(time.Second * time.Duration(wait+ttl))
-
-	challenge.StartTime = StartTime.Unix()
-	challenge.EndTime = EndTime.Unix()
-
-	return challenge
+type captchaResponse struct {
+	Value int    `json:"value"`
+	Image string `json:"image"`
 }
 
-// HasResult return is challenge has result
-func (c *Challenge) HasResult() bool {
-	if c.Result != "" {
-		return true
-	}
-	return false
+type challenge struct {
+	ID                      string `json:"i"`
+	ClientTemporaryChecksum string `json:"c_t_ch"`
+	ClientPersistChecksum   string `json:"c_p_ch"`
+	ChallengeType           string `json:"ch_t"`
+	Lang                    string `json:"l"`
+	TimeInit                int64  `json:"t_i"`
+	TimeWait                int64  `json:"t_w"`
+	ExpireTime              int64  `json:"t_o"`
+	TTL                     int64  `json:"ttl"`
+	TOTPSecret              string `json:"totp_s"`
+	JSChallengeValue        string `json:"js_ch_v"`
+	CaptchaChallengeValue   int    `json:"ch_ch_v"`
 }
 
-// Validate the challenge
-func (c *Challenge) Validate(challengeType string, checksum string) bool {
-	if c.Type != challengeType {
-		return false
-	}
-
-	if c.Checksum != checksum {
-		return false
+func newChallenge(
+	lang string,
+	challengeType string,
+	clientTemporaryChecksum string,
+	clientPersistChecksum string,
+	waitSeconds int64,
+	timeoutSeconds int64,
+	ttl int64,
+) *challenge {
+	ch := challenge{
+		ID:                      randomBase64(),
+		Lang:                    lang,
+		ClientTemporaryChecksum: clientTemporaryChecksum,
+		ClientPersistChecksum:   clientPersistChecksum,
+		ChallengeType:           challengeType,
+		TimeInit:                time.Now().Unix(),
+		TimeWait:                time.Now().Unix() + waitSeconds,
+		ExpireTime:              time.Now().Unix() + timeoutSeconds,
+		TTL:                     ttl,
 	}
 
-	now := time.Now().UTC().Unix()
+	return &ch
+}
 
-	if c.StartTime <= now && c.EndTime >= now {
-		return true
+func newChallengeFromString(tokenString string, secret string) (*challenge, error) {
+	aes := aesGo.NewAasaamAES(secret)
+	data := aes.DecryptTTL(tokenString)
+	if data == "" {
+		return nil, errors.New("invalid token data")
+	}
+	var ch challenge
+	err := json.Unmarshal([]byte(data), &ch)
+	if err != nil {
+		return nil, errors.New("invalid token structure")
+	}
+	return &ch, nil
+}
+
+func (ch *challenge) verify(clientTemporaryChecksum string) bool {
+	now := time.Now().Unix()
+	return len(clientTemporaryChecksum) > 16 && ch.ClientTemporaryChecksum == clientTemporaryChecksum && now >= ch.TimeWait && now <= ch.ExpireTime
+}
+
+func (ch *challenge) setJSValue() string {
+	value := randomBase64()
+	jsEval := fmt.Sprintf(`window.jsv=function(){return '%s'};`, value)
+	jsEvalEncode := base64.StdEncoding.EncodeToString([]byte(jsEval))
+	ch.JSChallengeValue = value
+	return jsEvalEncode
+}
+
+func (ch *challenge) setTOTPSecret(totpSecret string) {
+	ch.TOTPSecret = totpSecret
+}
+
+func (ch *challenge) setCaptchaValue(restCaptchaURL string, difficultyLevel string) (string, error) {
+	r := captchaRequest{
+		Lang:            ch.Lang,
+		Quality:         1,
+		DifficultyLevel: difficultyLevel,
+	}
+	jsonBytes, _ := json.Marshal(r)
+	req, err0 := http.NewRequest("POST", restCaptchaURL+"/new", bytes.NewBuffer(jsonBytes))
+	if err0 != nil {
+		return "", errors.New("failed to init request captcha server")
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err1 := client.Do(req)
+	if err1 != nil {
+		return "", errors.New("cannot request to captcha server")
+	}
+	defer resp.Body.Close()
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	var captchaRes captchaResponse
+	err2 := json.Unmarshal(body, &captchaRes)
+	if err2 != nil {
+		return "", errors.New("captcha server response invalid data")
 	}
 
-	return false
-}
-
-// JSON is convert challenge to json
-func (c *Challenge) JSON() string {
-	co := Challenge{}
-	co.Type = c.Type
-	co.Checksum = c.Checksum
-	co.Result = c.Result
-	co.StartTime = c.StartTime
-	co.EndTime = c.EndTime
-
-	bytes, _ := json.Marshal(co)
-
-	return string(bytes)
-}
-
-// ChallengeFromJSON is convert json to challenge
-func ChallengeFromJSON(jsonString string) (Challenge, error) {
-	var challenge Challenge
-
-	if err := json.Unmarshal([]byte(jsonString), &challenge); err != nil {
-		return Challenge{}, err
+	if captchaRes.Value < 1 {
+		return "", errors.New("captcha server value not return")
 	}
 
-	return challenge, nil
+	ch.CaptchaChallengeValue = captchaRes.Value
+
+	return captchaRes.Image, nil
 }
 
-// GenerateJSChallenge will generate eval for javascript challenge
-func (c *Challenge) GenerateJSChallenge() {
-	c.Result = RandomHex()
-
-	src := []byte(c.Result)
-
-	key := []byte(RandomHex())
-	cipher, _ := rc4.NewCipher(key)
-	dst := make([]byte, len(src))
-	cipher.XORKeyStream(dst, src)
-
-	c.Content = base64.StdEncoding.EncodeToString(key) + ":" + base64.StdEncoding.EncodeToString(dst)
+func (ch *challenge) verifyJSValue(v string) bool {
+	return v != "" && len(v) >= 32 && v == ch.JSChallengeValue
 }
 
-// GenerateCaptchaChallenge will generate captcha image for human detection
-func (c *Challenge) GenerateCaptchaChallenge(farsi bool) {
-	rand.Seed(time.Now().UnixNano())
+func (ch *challenge) verifyCaptchaValue(v int) bool {
+	return v > 9 && v < 9999999999 && v == ch.CaptchaChallengeValue
+}
 
-	frontColor := color.RGBA{32, 32, 32, 0xff}
-	backColor := color.RGBA{192, 192, 192, 0xff}
-
-	var font []byte
-	if farsi {
-		max := len(FarsiCaptchaFonts)
-		font = FarsiCaptchaFonts[rand.Intn(max-0)+0]
-	} else {
-		max := len(CaptchaFonts)
-		font = CaptchaFonts[rand.Intn(max-0)+0]
-	}
-
-	cap := captcha.New()
-	cap.SetSize(320, 128)
-	cap.AddFontFromBytes(font)
-	cap.SetFrontColor(frontColor)
-	cap.SetBkgColor(backColor)
-	cap.SetDisturbance(64)
-
-	c.Result = RandomCaptchaLetters()
-	img := cap.CreateCustom(c.Result)
-
-	buf := new(bytes.Buffer)
-	jpeg.Encode(buf, img, &jpeg.Options{
-		Quality: 50,
+func (ch *challenge) verifyTOTP(v string) bool {
+	passCode, err := totp.GenerateCodeCustom(ch.TOTPSecret, time.Now(), totp.ValidateOpts{
+		Skew:      1,
+		Digits:    otp.DigitsSix,
+		Algorithm: otp.AlgorithmSHA1,
 	})
+	return err == nil && passCode == v
+}
 
-	c.Content = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(buf.Bytes())
+func (ch *challenge) getChallengeToken(secret string) (string, error) {
+	aes := aesGo.NewAasaamAES(secret)
+	byteData, err := json.Marshal(ch)
+	if err != nil {
+		return "", err
+	}
+	return aes.EncryptTTL(string(byteData), ch.TTL), nil
 }

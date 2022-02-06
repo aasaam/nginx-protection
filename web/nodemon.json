@@ -1,0 +1,7 @@
+{
+  "watch": [
+    "css/main.scss",
+    "web/js/app/*.js"
+  ],
+  "delay": 2500
+}

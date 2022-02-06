@@ -1,56 +1,40 @@
 {
-  "name": "@aasaam/nginx-protection",
+  "name": "nginx-protection",
+  "description": "Layer 7 auth request protection for HTTP applications.",
   "version": "0.0.0",
-  "description": "Nginx protection",
-  "keywords": [
-    "nginx",
-    "server",
-    "captcha",
-    "sha512",
-    "javascript",
-    "challenge",
-    "auth_request"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aasaam/nginx-protection.git"
-  },
-  "devDependencies": {
-    "@aasaam/brand-icons": "^0",
-    "@aasaam/information": "^0",
-    "@aasaam/noto-font": "^0",
-    "angular": "^1",
-    "angular-messages": "^1",
-    "await-to-js": "^2",
-    "bulma": "^0",
-    "eslint": "^7",
-    "eslint-config-airbnb": "^18",
-    "eslint-config-airbnb-base": "^14",
-    "eslint-config-prettier": "^6",
-    "eslint-plugin-import": "^2",
-    "eslint-plugin-jsx-a11y": "^6",
-    "eslint-plugin-prettier": "^3",
-    "eslint-plugin-react": "^7",
-    "eslint-plugin-sonarjs": "^0",
-    "flat": "^5",
-    "lodash": "^4",
-    "node-sass": "^4",
-    "nodemon": "^2",
-    "prettier": "^2",
-    "promise-polyfill": "^8",
-    "pug": "^3",
-    "uglify-js": "^3",
-    "url-polyfill": "^1"
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "build": "node ./bin/build.js"
-  },
+  "private": true,
   "authors": [
     {
       "name": "Muhammad Hussein Fattahizadeh",
       "email": "m@mhf.ir"
     }
   ],
-  "license": "BSD-3-Clause"
+  "scripts": {
+    "lint": "eslint .",
+    "build": "node build.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@aasaam/noto-font": "^0",
+    "angular": "^1",
+    "angular-messages": "^1",
+    "bulma": "^0",
+    "eslint": "^8",
+    "eslint-config-airbnb": "^19",
+    "eslint-config-airbnb-base": "^15",
+    "eslint-config-prettier": "^8",
+    "eslint-plugin-import": "^2",
+    "eslint-plugin-jsx-a11y": "^6",
+    "eslint-plugin-prettier": "^4",
+    "eslint-plugin-react": "^7",
+    "eslint-plugin-sonarjs": "^0",
+    "node-sass": "^7",
+    "nodemon": "^2",
+    "prettier": "^2",
+    "strip-comments": "^2",
+    "uglify-js": "^3"
+  }
 }

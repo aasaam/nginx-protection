@@ -45,7 +45,13 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 	ipData, _ := json.Marshal(getClientProperties(c))
 	unixTime, _ := json.Marshal(time.Now().Unix())
 
-	defer config.getLogger().Info().Str("challenge_type", challengeType).Str("ip", ip).Str("rid", requestID).Send()
+	defer config.getLogger().
+		Info().
+		Str(logType, logTypeChallengeGenerate).
+		Str(logPropertyIP, ip).
+		Str(logPropertyRequestID, requestID).
+		Str(logPropertyChallengeType, challengeType).
+		Send()
 
 	// set header
 	c.Set(httpResponseChallengeToken, challengeToken)

@@ -14,20 +14,45 @@ func httpChallengePatch(c *fiber.Ctx, config *config) error {
 	var chReq challengeRequest
 	if parseError := c.BodyParser(&chReq); parseError != nil {
 		errorMessage := "invalid request"
-		defer config.getLogger().Error().Str("ip", ip).Str("rid", requestID).Str("err", parseError.Error()).Msg(errorMessage)
+
+		defer config.getLogger().
+			Warn().
+			Str(logType, logTypeChallengeFailed).
+			Str(logPropertyIP, ip).
+			Str(logPropertyError, parseError.Error()).
+			Str(logPropertyRequestID, requestID).
+			Msg(errorMessage)
+
 		return errors.New(errorMessage)
 	}
 
 	challenge, challengeParseErr := newChallengeFromString(chReq.ChallengeToken, config.clientSecret)
 	if challengeParseErr != nil {
 		errorMessage := "invalid challenge token for parse"
-		defer config.getLogger().Warn().Str("ip", ip).Str("rid", requestID).Str("err", challengeParseErr.Error()).Msg(errorMessage)
+
+		defer config.getLogger().
+			Warn().
+			Str(logType, logTypeChallengeFailed).
+			Str(logPropertyChallengeType, challenge.ChallengeType).
+			Str(logPropertyIP, ip).
+			Str(logPropertyError, challengeParseErr.Error()).
+			Str(logPropertyRequestID, requestID).
+			Msg(errorMessage)
+
 		return errors.New(errorMessage)
 	}
 
 	if !challenge.verify(temporaryChecksum) {
 		errorMessage := "token invalid, timeout or expired"
-		config.getLogger().Warn().Str("ip", ip).Str("rid", requestID).Msg(errorMessage)
+
+		defer config.getLogger().
+			Info().
+			Str(logPropertyChallengeType, challenge.ChallengeType).
+			Str(logType, logTypeChallengeFailed).
+			Str(logPropertyIP, ip).
+			Str(logPropertyRequestID, requestID).
+			Msg(errorMessage)
+
 		return errors.New(errorMessage)
 	}
 
@@ -40,7 +65,15 @@ func httpChallengePatch(c *fiber.Ctx, config *config) error {
 		image, err := challenge.setCaptchaValue(config.restCaptchaURL, c.Get(httpRequestHeaderConfigCaptchaDifficulty, "hard"))
 		if err != nil {
 			errorMessage := "cannot get image from captcha server"
-			config.getLogger().Error().Str("ip", ip).Str("rid", requestID).Str("err", err.Error()).Msg(errorMessage)
+
+			defer config.getLogger().
+				Error().
+				Str(logPropertyChallengeType, challenge.ChallengeType).
+				Str(logType, logTypeChallengeFailed).
+				Str(logPropertyIP, ip).
+				Str(logPropertyRequestID, requestID).
+				Msg(errorMessage)
+
 			return errors.New(errorMessage)
 		}
 		chResp.JSProblem = challenge.setJSValue()
@@ -53,11 +86,19 @@ func httpChallengePatch(c *fiber.Ctx, config *config) error {
 	chResp.ChallengeToken, challengeErr = challenge.getChallengeToken(config.clientSecret)
 	if challengeErr != nil {
 		errorMessage := "cannot generate updated challenge"
-		config.getLogger().Error().Str("ip", ip).Str("rid", requestID).Str("err", challengeErr.Error()).Msg(errorMessage)
+
+		defer config.getLogger().
+			Warn().
+			Str(logPropertyChallengeType, challenge.ChallengeType).
+			Str(logType, logTypeChallengeFailed).
+			Str(logPropertyIP, ip).
+			Str(logPropertyError, challengeErr.Error()).
+			Str(logPropertyRequestID, requestID).
+			Msg(errorMessage)
+
 		return errors.New(errorMessage)
 	}
 
 	c.Set(httpResponseChallengeToken, chResp.ChallengeToken)
-
 	return c.JSON(chResp)
 }

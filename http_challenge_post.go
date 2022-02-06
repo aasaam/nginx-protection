@@ -15,26 +15,59 @@ func httpChallengePost(c *fiber.Ctx, config *config, challengeStorage *challenge
 	var chReq challengeRequest
 	if parseError := c.BodyParser(&chReq); parseError != nil {
 		errorMessage := "invalid request"
-		defer config.getLogger().Error().Str("ip", ip).Str("rid", requestID).Str("err", parseError.Error()).Msg(errorMessage)
+
+		defer config.getLogger().
+			Warn().
+			Str(logType, logTypeChallengeFailed).
+			Str(logPropertyIP, ip).
+			Str(logPropertyError, parseError.Error()).
+			Str(logPropertyRequestID, requestID).
+			Msg(errorMessage)
+
 		return errors.New(errorMessage)
 	}
 
 	challenge, challengeParseErr := newChallengeFromString(chReq.ChallengeToken, config.clientSecret)
 	if challengeParseErr != nil {
 		errorMessage := "invalid challenge token for parse"
-		defer config.getLogger().Warn().Str("ip", ip).Str("rid", requestID).Str("err", challengeParseErr.Error()).Msg(errorMessage)
+
+		defer config.getLogger().
+			Warn().
+			Str(logPropertyChallengeType, challenge.ChallengeType).
+			Str(logType, logTypeChallengeFailed).
+			Str(logPropertyIP, ip).
+			Str(logPropertyError, challengeParseErr.Error()).
+			Str(logPropertyRequestID, requestID).
+			Msg(errorMessage)
+
 		return errors.New(errorMessage)
 	}
 
 	if challengeStorage.exist(challenge.ID) {
 		errorMessage := "duplicate try for solve"
-		defer config.getLogger().Warn().Str("ip", ip).Str("rid", requestID).Msg(errorMessage)
+
+		defer config.getLogger().
+			Warn().
+			Str(logPropertyChallengeType, challenge.ChallengeType).
+			Str(logType, logTypeChallengeFailed).
+			Str(logPropertyIP, ip).
+			Str(logPropertyRequestID, requestID).
+			Msg(errorMessage)
+
 		return errors.New(errorMessage)
 	}
 
 	if !challenge.verify(temporaryChecksum) {
 		errorMessage := "token invalid, timeout or expired"
-		defer config.getLogger().Warn().Str("ip", ip).Str("rid", requestID).Msg(errorMessage)
+
+		defer config.getLogger().
+			Info().
+			Str(logPropertyChallengeType, challenge.ChallengeType).
+			Str(logType, logTypeChallengeFailed).
+			Str(logPropertyIP, ip).
+			Str(logPropertyRequestID, requestID).
+			Msg(errorMessage)
+
 		return errors.New(errorMessage)
 	}
 
@@ -52,7 +85,14 @@ func httpChallengePost(c *fiber.Ctx, config *config, challengeStorage *challenge
 	}
 
 	if valid {
-		defer config.getLogger().Info().Str("ip", ip).Str("rid", requestID).Str("challenge_type", challenge.ChallengeType).Msg("token generate successfully")
+		defer config.getLogger().
+			Info().
+			Str(logPropertyChallengeType, challenge.ChallengeType).
+			Str(logType, logTypeChallengeSuccess).
+			Str(logPropertyIP, ip).
+			Str(logPropertyRequestID, requestID).
+			Send()
+
 		defer prometheusRequestChallengeSuccess.WithLabelValues(challenge.ChallengeType).Inc()
 
 		persistToken := newPersistToken(challenge.ChallengeType, challenge.ClientPersistChecksum, challenge.TTL)
@@ -70,7 +110,15 @@ func httpChallengePost(c *fiber.Ctx, config *config, challengeStorage *challenge
 	}
 
 	defer prometheusRequestChallengeFailed.WithLabelValues(challenge.ChallengeType).Inc()
-	defer config.getLogger().Info().Str("ip", ip).Str("rid", requestID).Str("challenge_type", challenge.ChallengeType).Msg("solve failed")
+
+	defer config.getLogger().
+		Warn().
+		Str(logType, logTypeChallengeFailed).
+		Str(logPropertyChallengeType, challenge.ChallengeType).
+		Str(logPropertyIP, ip).
+		Str(logPropertyRequestID, requestID).
+		Send()
+
 	c.SendStatus(403)
 	return c.JSON(false)
 }

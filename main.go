@@ -87,11 +87,12 @@ func runServer(c *cli.Context) error {
 		for {
 			challengeStorageCount := challengeStorage.gc()
 			aclStorageCount := aclStorage.gc()
-			config.getLogger().
+			defer config.getLogger().
 				Debug().
+				Str(logType, logTypeApp).
 				Int("challenge_storage_count", challengeStorageCount).
 				Int("acl_storage_count", aclStorageCount).
-				Msg("clearing storage items")
+				Send()
 
 			time.Sleep(time.Second * 10)
 		}
@@ -201,7 +202,7 @@ func main() {
 				&cli.StringFlag{
 					Name:    "log-level",
 					Usage:   "Could be one of `panic`, `fatal`, `error`, `warn`, `info`, `debug` or `trace`",
-					Value:   "warn",
+					Value:   "trace",
 					EnvVars: []string{"ASM_LOCALE_DIR"},
 				},
 				&cli.BoolFlag{

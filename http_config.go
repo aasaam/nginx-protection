@@ -66,7 +66,7 @@ func checkConfiguration(c *fiber.Ctx) error {
 }
 
 func getRequestIP(c *fiber.Ctx) (string, error) {
-	ip := c.Get("X-Forwarded-For", "")
+	ip := c.Get(httpRequestHeaderXForwardedFor, "")
 	if ip == "" {
 		return "", errors.New("ip address not found")
 	}

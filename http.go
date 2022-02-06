@@ -48,13 +48,17 @@ func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorag
 
 			defer prometheusRequestError.WithLabelValues(strconv.Itoa(code)).Inc()
 
-			defer config.getLogger().Warn().
-				Str("type", "http_error").
-				Str("error", err.Error()).
-				Int("status_code", code).
-				Str("url", c.Request().URI().String()).
-				Str("method", c.Method()).
-				Str("rid", c.Get(httpRequestHeaderRequestID, "")).
+			ip, _ := getRequestIP(c)
+
+			defer config.getLogger().
+				Error().
+				Str(logType, logTypeHTTPError).
+				Str(logPropertyError, err.Error()).
+				Str(logPropertyIP, ip).
+				Str(logPropertyRequestID, c.Get(httpRequestHeaderRequestID, "")).
+				Str(logPropertyMethod, c.Method()).
+				Str(logPropertyURL, c.Request().URI().String()).
+				Int(logPropertyStatusCode, code).
 				Send()
 
 			c.Set(fiber.HeaderContentType, fiber.MIMETextPlainCharsetUTF8)
@@ -72,12 +76,15 @@ func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorag
 	app.Use(func(c *fiber.Ctx) error {
 		c.Set("X-Robots-Tag", "noindex,nofollow")
 
+		ip, _ := getRequestIP(c)
+
 		defer config.getLogger().
-			Debug().
-			Str("type", "http_request").
-			Str("url", c.Request().URI().String()).
-			Str("method", c.Method()).
-			Str("rid", c.Get(httpRequestHeaderRequestID, "")).
+			Info().
+			Str(logType, logTypeHTTPRequest).
+			Str(logPropertyIP, ip).
+			Str(logPropertyRequestID, c.Get(httpRequestHeaderRequestID, "")).
+			Str(logPropertyMethod, c.Method()).
+			Str(logPropertyURL, c.Request().URI().String()).
 			Send()
 
 		// count expect static or metrics
@@ -94,7 +101,7 @@ func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorag
 			return fiber.NewError(misconfigureStatus, "Configuration failed: "+configError.Error())
 		}
 
-		success := checkAuth(c, config, aclStorage)
+		success := checkAuth(c, config, aclStorage, true)
 		if success {
 			return c.JSON("Authorized")
 		}
@@ -110,7 +117,7 @@ func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorag
 			return fiber.NewError(misconfigureStatus, "Configuration failed: "+configError.Error())
 		}
 
-		success := checkAuth(c, config, aclStorage)
+		success := checkAuth(c, config, aclStorage, false)
 		if success {
 			return c.Redirect(getProtectedPath(c))
 		}
@@ -138,7 +145,7 @@ func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorag
 
 	// static serve
 	if !config.cdnStatic {
-		config.getLogger().Warn().Msg("disable cdn mode")
+		defer config.getLogger().Info().Str(logType, logTypeApp).Msg("disable cdn mode")
 		appConfig := filesystem.Config{
 			Next: func(c *fiber.Ctx) bool {
 				c.Set("Cache-Control", "public, max-age=14400")
@@ -149,18 +156,23 @@ func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorag
 
 		app.Use(config.baseURL+"/challenge", filesystem.New(appConfig))
 	} else {
-		config.getLogger().Warn().Msg("enable cdn mode")
+		defer config.getLogger().Info().Str(logType, logTypeApp).Msg("enable cdn mode")
 	}
 
 	// 404
 	app.Use(func(c *fiber.Ctx) error {
 		defer prometheusRequestError.WithLabelValues("404").Inc()
+
+		ip, _ := getRequestIP(c)
+
 		defer config.getLogger().
 			Warn().
-			Str("type", "http_404").
-			Str("url", c.Request().URI().String()).
-			Str("method", c.Method()).
-			Str("rid", c.Locals(localVarRequestID).(string)).
+			Str(logType, logTypeHTTPError).
+			Str(logPropertyIP, ip).
+			Str(logPropertyRequestID, c.Get(httpRequestHeaderRequestID, "")).
+			Str(logPropertyMethod, c.Method()).
+			Str(logPropertyURL, c.Request().URI().String()).
+			Int(logPropertyStatusCode, 404).
 			Send()
 
 		c.Set(fiber.HeaderContentType, fiber.MIMETextPlainCharsetUTF8)

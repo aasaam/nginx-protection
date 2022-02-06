@@ -39,7 +39,36 @@ const (
 )
 
 const (
+	logType                  = "type"
+	logTypeACL               = "acl"
+	logTypeChallengeGenerate = "challenge_new"
+	logTypeChallengeFailed   = "challenge_failed"
+	logTypeChallengeSuccess  = "challenge_success"
+	logTypeAuthFailed        = "auth_failed"
+	logTypeAuthSuccess       = "auth_success"
+	logTypeAuthCheck         = "auth_check"
+	logTypeAuthCache         = "auth_cache"
+	logTypeHTTPError         = "http_error"
+	logTypeHTTPRequest       = "http_request"
+	logTypeApp               = "app"
+)
+
+const (
+	logPropertyIP            = "ip"
+	logPropertyURL           = "url"
+	logPropertyChallengeType = "challenge_type"
+	logPropertyMethod        = "method"
+	logPropertyStatusCode    = "status"
+	logPropertyAuth          = "auth"
+	logPropertyError         = "err"
+	logPropertyACL           = "acl"
+	logPropertyValue         = "value"
+	logPropertyRequestID     = "rid"
+)
+
+const (
 	// Configurations:
+	httpRequestHeaderXForwardedFor               = "X-Forwarded-For"
 	httpRequestHeaderRequestID                   = "X-Request-ID"
 	httpRequestHeaderConfigNodeID                = "X-Protection-Config-Node-ID"
 	httpRequestHeaderConfigSupportEmail          = "X-Protection-Config-Support-Email"

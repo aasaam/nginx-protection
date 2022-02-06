@@ -5,9 +5,15 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-func failedResponse(config *config, ip string) bool {
-	defer prometheusRequestAuthFailed.Inc()
-	defer config.getLogger().Info().Str("ip", ip).Msg("auth blocked")
+func failedResponse(config *config, ip string, realCheck bool) bool {
+	if realCheck {
+		defer prometheusRequestAuthFailed.Inc()
+		defer config.getLogger().
+			Info().
+			Str(logType, logTypeAuthFailed).
+			Str(logPropertyIP, ip).
+			Send()
+	}
 	return false
 }
 
@@ -16,50 +22,70 @@ func successResponse(
 	aclStorage *aclStorage,
 	clientPersistChecksum string,
 	aclRule string,
-	name string,
+	value string,
 	ttl int64,
+	ip string,
+	realCheck bool,
 ) bool {
-	defer prometheusRequestAuthSuccess.With(prometheus.Labels{"acl": aclRule, "value": name}).Inc()
-	defer config.getLogger().Info().Str("acl", aclRule).Str("var", name).Msg("auth allowed")
-	aclStorage.add(clientPersistChecksum, aclRule, name, minMaxDefault64(ttl, 60, 600))
+	if realCheck {
+		defer prometheusRequestAuthSuccess.With(prometheus.Labels{"acl": aclRule, "value": value}).Inc()
+
+		defer config.getLogger().
+			Info().
+			Str(logType, logTypeAuthSuccess).
+			Str(logPropertyIP, ip).
+			Str(logPropertyACL, aclRule).
+			Str(logPropertyValue, value).
+			Send()
+
+		aclStorage.add(clientPersistChecksum, aclRule, value, minMaxDefault64(ttl, 60, 600))
+	}
 	return true
 }
 
-func checkAuth(c *fiber.Ctx, config *config, aclStorage *aclStorage) bool {
+func checkAuth(c *fiber.Ctx, config *config, aclStorage *aclStorage, realCheck bool) bool {
 	ttl := getConfigTTLSeconds(c)
 	persistChecksum := c.Locals(localVarClientPersistChecksum).(string)
 	ip := c.Locals(localVarIP).(string)
 
 	storageItem := aclStorage.exist(persistChecksum)
 	if storageItem != nil {
-		defer config.getLogger().Info().Str("ip", ip).Str("checksum", persistChecksum).Msg("auth allowed using cache")
-		return successResponse(config, aclStorage, persistChecksum, storageItem.rule, storageItem.name, ttl)
+		defer config.getLogger().
+			Info().
+			Str(logType, logTypeAuthCache).
+			Str(logPropertyIP, ip).
+			Send()
+		return successResponse(config, aclStorage, persistChecksum, storageItem.rule, storageItem.name, ttl, ip, realCheck)
 	}
 
-	defer config.getLogger().Info().Str("ip", ip).Str("checksum", persistChecksum).Msg("try to process request")
+	defer config.getLogger().
+		Info().
+		Str(logType, logTypeAuthCheck).
+		Str(logPropertyIP, ip).
+		Send()
 
 	// api keys
 	success, apiClientName := aclCheckAPIKeys(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleAPI, apiClientName, ttl)
+		return successResponse(config, aclStorage, persistChecksum, aclRuleAPI, apiClientName, ttl, ip, realCheck)
 	}
 
 	// country
 	success, countryCode := aclCheckCountries(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleCountry, countryCode, ttl)
+		return successResponse(config, aclStorage, persistChecksum, aclRuleCountry, countryCode, ttl, ip, realCheck)
 	}
 
 	// cidr
 	success, cidr := aclCheckCIDRs(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleCIDR, cidr, ttl)
+		return successResponse(config, aclStorage, persistChecksum, aclRuleCIDR, cidr, ttl, ip, realCheck)
 	}
 
 	// asn
 	success, asn := aclCheckASNs(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleASN, asn, ttl)
+		return successResponse(config, aclStorage, persistChecksum, aclRuleASN, asn, ttl, ip, realCheck)
 	}
 
 	// cookie check
@@ -67,14 +93,9 @@ func checkAuth(c *fiber.Ctx, config *config, aclStorage *aclStorage) bool {
 	if cookieVar != "" {
 		cookieToken, cookieErr := newPersistTokenFromString(cookieVar, config.tokenSecret)
 		if cookieErr == nil {
-			return successResponse(config, aclStorage, persistChecksum, aclRuleChallenge, cookieToken.Type, ttl)
+			return successResponse(config, aclStorage, persistChecksum, aclRuleChallenge, cookieToken.Type, ttl, ip, realCheck)
 		}
 	}
 
-	return failedResponse(config, ip)
+	return failedResponse(config, ip, realCheck)
 }
-
-// func httpAuth(c *fiber.Ctx, config *config, aclStorage *aclStorage) (bool, error) {
-
-//
-// }

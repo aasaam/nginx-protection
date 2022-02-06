@@ -87,7 +87,7 @@ func runServer(c *cli.Context) error {
 		for {
 			challengeStorageCount := challengeStorage.gc()
 			aclStorageCount := aclStorage.gc()
-			defer config.getLogger().
+			config.getLogger().
 				Debug().
 				Str(logType, logTypeApp).
 				Int("challenge_storage_count", challengeStorageCount).

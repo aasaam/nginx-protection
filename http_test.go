@@ -18,7 +18,7 @@ func TestHTTPTest01(t *testing.T) {
 	clientSecret := aesGo.GenerateKey()
 	config := newConfig("fatal", false, "en", "en,fa", tokenSecret, clientSecret, "/.well-known/protection", "", "", "")
 	challengeStorage := newChallengeStorage()
-	aclStorage := newAclStorage()
+	aclStorage := newACLStorage()
 	clientPersistChecksum := aesGo.GenerateKey()
 	clientTemporaryChecksum := aesGo.GenerateKey()
 	ip := "1.1.1.1"
@@ -108,7 +108,7 @@ func TestHTTPTest02(t *testing.T) {
 	clientSecret := aesGo.GenerateKey()
 	config := newConfig("fatal", false, "en", "en,fa", tokenSecret, clientSecret, "/.well-known/protection", "", "", "")
 	challengeStorage := newChallengeStorage()
-	aclStorage := newAclStorage()
+	aclStorage := newACLStorage()
 	clientPersistChecksum := aesGo.GenerateKey()
 	clientTemporaryChecksum := aesGo.GenerateKey()
 	ip := "1.1.1.1"
@@ -124,7 +124,7 @@ func TestHTTPTest02(t *testing.T) {
 	req1.Header.Set(httpRequestHeaderConfigChallenge, challengeTypeBlock)
 	// configure
 	req1.Header.Set("X-Forwarded-For", "192.168.1.1, 1.1.1.1")
-	req1.Header.Set(httpRequestHeaderAclCIDRs, "127.0.0.0/8, invalid, 192.168.0.0/16")
+	req1.Header.Set(httpRequestHeaderACLCIDRs, "127.0.0.0/8, invalid, 192.168.0.0/16")
 	// for acl cache
 	httpApp.Test(req1)
 	resp1, _ := httpApp.Test(req1)
@@ -141,7 +141,7 @@ func TestHTTPTest02(t *testing.T) {
 	req2.Header.Set(httpRequestHeaderConfigChallenge, challengeTypeBlock)
 	// configure
 	req2.Header.Set(httpRequestHeaderClientCountry, "CN")
-	req2.Header.Set(httpRequestHeaderAclCountries, "DE, IR, CN, 678, AA")
+	req2.Header.Set(httpRequestHeaderACLCountries, "DE, IR, CN, 678, AA")
 	resp2, _ := httpApp.Test(req2)
 	if resp2.StatusCode != 200 {
 		t.Errorf("must authorized country")
@@ -156,7 +156,7 @@ func TestHTTPTest02(t *testing.T) {
 	req3.Header.Set(httpRequestHeaderConfigChallenge, challengeTypeBlock)
 	// configure
 	req3.Header.Set(httpRequestHeaderClientASNNumber, "1000")
-	req3.Header.Set(httpRequestHeaderAclASNs, "2000,10,aa , 2000, 1000, 99")
+	req3.Header.Set(httpRequestHeaderACLASNs, "2000,10,aa , 2000, 1000, 99")
 	resp3, _ := httpApp.Test(req3)
 	if resp3.StatusCode != 200 {
 		t.Errorf("must authorized country")
@@ -171,7 +171,7 @@ func TestHTTPTest02(t *testing.T) {
 	req4.Header.Set(httpRequestHeaderConfigChallenge, challengeTypeBlock)
 	// configure
 	req4.Header.Set(httpRequestHeaderClientASNNumber, "1000")
-	req4.Header.Set(httpRequestHeaderAclASNRanges, "100-200, aa-100, 200-cc, 1000-1100")
+	req4.Header.Set(httpRequestHeaderACLASNRanges, "100-200, aa-100, 200-cc, 1000-1100")
 	resp4, _ := httpApp.Test(req4)
 	if resp4.StatusCode != 200 {
 		t.Errorf("must authorized country")
@@ -186,7 +186,7 @@ func TestHTTPTest02(t *testing.T) {
 	req5.Header.Set(httpRequestHeaderConfigChallenge, challengeTypeBlock)
 	// configure
 	req5.Header.Set(httpRequestHeaderClientAPIKeyHeaderName, "v2")
-	req5.Header.Set(httpRequestHeaderAclAPIKeys, `{"c1":"v1", "c2":"v2"}`)
+	req5.Header.Set(httpRequestHeaderACLAPIKeys, `{"c1":"v1", "c2":"v2"}`)
 	resp5, _ := httpApp.Test(req5)
 	if resp5.StatusCode != 200 {
 		t.Errorf("must authorized country")
@@ -199,7 +199,7 @@ func TestHTTPTest03(t *testing.T) {
 	clientSecret := aesGo.GenerateKey()
 	config := newConfig("fatal", false, "en", "en,fa", tokenSecret, clientSecret, "/.well-known/protection", "", "", "")
 	challengeStorage := newChallengeStorage()
-	aclStorage := newAclStorage()
+	aclStorage := newACLStorage()
 	clientPersistChecksum := aesGo.GenerateKey()
 	clientTemporaryChecksum := aesGo.GenerateKey()
 	ip := "1.1.1.1, aa , 8.8.8.8"
@@ -294,7 +294,7 @@ func TestHTTPTest04(t *testing.T) {
 	clientSecret := aesGo.GenerateKey()
 	config := newConfig("fatal", false, "en", "en,fa", tokenSecret, clientSecret, "/.well-known/protection", "", "", "")
 	challengeStorage := newChallengeStorage()
-	aclStorage := newAclStorage()
+	aclStorage := newACLStorage()
 	clientPersistChecksum := aesGo.GenerateKey()
 	clientTemporaryChecksum := aesGo.GenerateKey()
 	ip := "1.1.1.1, aa , 8.8.8.8"
@@ -371,7 +371,7 @@ func TestHTTPTest04(t *testing.T) {
 	}
 }
 
-func BenchmarkAclStorageOnHTTP(b *testing.B) {
+func BenchmarkACLStorageOnHTTP(b *testing.B) {
 	// variables
 	tokenSecret := aesGo.GenerateKey()
 	clientSecret := aesGo.GenerateKey()
@@ -379,7 +379,7 @@ func BenchmarkAclStorageOnHTTP(b *testing.B) {
 	clientTemporaryChecksum := aesGo.GenerateKey()
 	config := newConfig("fatal", false, "en", "en,fa", tokenSecret, clientSecret, "/.well-known/protection", "", "", "")
 	challengeStorage := newChallengeStorage()
-	aclStorage := newAclStorage()
+	aclStorage := newACLStorage()
 	ip := "192.168.1.1"
 
 	// http server
@@ -394,7 +394,7 @@ func BenchmarkAclStorageOnHTTP(b *testing.B) {
 		req.Header.Set(httpRequestHeaderClientTemporaryChecksum, clientTemporaryChecksum)
 		req.Header.Set(httpRequestHeaderConfigChallenge, challengeTypeBlock)
 		req.Header.Set(httpRequestHeaderClientASNNumber, "1000")
-		req.Header.Set(httpRequestHeaderAclASNRanges, "10-100,1000-1100")
+		req.Header.Set(httpRequestHeaderACLASNRanges, "10-100,1000-1100")
 		resp, _ := httpApp.Test(req)
 		if resp.StatusCode != 200 {
 			b.Error("must valid")

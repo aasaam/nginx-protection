@@ -65,12 +65,12 @@ const (
 	httpRequestHeaderClientASNNumber         = "X-Protection-Client-ASN-Number"
 	httpRequestHeaderClientASNOrganization   = "X-Protection-Client-ASN-Organization"
 
-	// Acl:
-	httpRequestHeaderAclCountries = "X-Protection-ACL-Countries"
-	httpRequestHeaderAclCIDRs     = "X-Protection-ACL-CIDRs"
-	httpRequestHeaderAclASNs      = "X-Protection-ACL-ASNs"
-	httpRequestHeaderAclASNRanges = "X-Protection-ACL-ASN-Ranges"
-	httpRequestHeaderAclAPIKeys   = "X-Protection-ACL-API-Keys"
+	// ACL:
+	httpRequestHeaderACLCountries = "X-Protection-ACL-Countries"
+	httpRequestHeaderACLCIDRs     = "X-Protection-ACL-CIDRs"
+	httpRequestHeaderACLASNs      = "X-Protection-ACL-ASNs"
+	httpRequestHeaderACLASNRanges = "X-Protection-ACL-ASN-Ranges"
+	httpRequestHeaderACLAPIKeys   = "X-Protection-ACL-API-Keys"
 
 	httpResponseChallengeToken  = "X-Challenge-Token"
 	httpResponseChallengeResult = "X-Challenge-Result"

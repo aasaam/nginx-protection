@@ -68,7 +68,7 @@ func totpCheck(c *cli.Context) error {
 func runServer(c *cli.Context) error {
 
 	challengeStorage := newChallengeStorage()
-	aclStorage := newAclStorage()
+	aclStorage := newACLStorage()
 
 	config := newConfig(
 		c.String("log-level"),

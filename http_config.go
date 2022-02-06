@@ -192,7 +192,7 @@ func getProtectedPath(c *fiber.Ctx) string {
 func aclCheckCIDRs(c *fiber.Ctx) (bool, string) {
 	ipString := c.Locals(localVarIP).(string)
 	ip := net.ParseIP(ipString)
-	for _, cidr := range strings.Split(c.Get(httpRequestHeaderAclCIDRs, ""), ",") {
+	for _, cidr := range strings.Split(c.Get(httpRequestHeaderACLCIDRs, ""), ",") {
 		cleanCIDR := strings.TrimSpace(cidr)
 		_, ipv4Net, err := net.ParseCIDR(cleanCIDR)
 		if err == nil && ipv4Net.Contains(ip) {
@@ -215,7 +215,7 @@ func aclCheckASNs(c *fiber.Ctx) (bool, string) {
 
 	asnString := strconv.Itoa(clientASNInt)
 
-	for _, asnNum := range strings.Split(c.Get(httpRequestHeaderAclASNs, ""), ",") {
+	for _, asnNum := range strings.Split(c.Get(httpRequestHeaderACLASNs, ""), ",") {
 		v := strings.TrimSpace(asnNum)
 		vInt, err := strconv.Atoi(v)
 		if err == nil && clientASNInt == vInt {
@@ -223,7 +223,7 @@ func aclCheckASNs(c *fiber.Ctx) (bool, string) {
 		}
 	}
 
-	for _, asnRange := range strings.Split(c.Get(httpRequestHeaderAclASNRanges, ""), ",") {
+	for _, asnRange := range strings.Split(c.Get(httpRequestHeaderACLASNRanges, ""), ",") {
 		v := strings.TrimSpace(asnRange)
 
 		if asnRangeRegexp.MatchString(v) {
@@ -248,7 +248,7 @@ func aclCheckCountries(c *fiber.Ctx) (bool, string) {
 		return false, ""
 	}
 
-	for _, isoCode := range strings.Split(c.Get(httpRequestHeaderAclCountries, ""), ",") {
+	for _, isoCode := range strings.Split(c.Get(httpRequestHeaderACLCountries, ""), ",") {
 		code := strings.TrimSpace(isoCode)
 		if len(code) == 2 && clientCountry == code {
 			return true, code
@@ -264,7 +264,7 @@ func aclCheckAPIKeys(c *fiber.Ctx) (bool, string) {
 		return false, ""
 	}
 
-	v := c.Get(httpRequestHeaderAclAPIKeys, "_")
+	v := c.Get(httpRequestHeaderACLAPIKeys, "_")
 	var clientKeyMap map[string]string
 	e := json.Unmarshal([]byte(v), &clientKeyMap)
 	if e == nil {

@@ -17,7 +17,7 @@ type aclStorage struct {
 	items map[string]aclStorageItem
 }
 
-func newAclStorage() *aclStorage {
+func newACLStorage() *aclStorage {
 	items := make(map[string]aclStorageItem)
 
 	a := aclStorage{

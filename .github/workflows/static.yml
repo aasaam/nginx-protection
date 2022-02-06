@@ -31,3 +31,11 @@ jobs:
           git add .
           git commit -a -m "Static build on $(date)"
           git branch -m static
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force: true
+          directory: static
+          branch: static

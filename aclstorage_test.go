@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-func TestAclStorage(t *testing.T) {
-	cs := newAclStorage()
+func TestACLStorage(t *testing.T) {
+	cs := newACLStorage()
 	cs.gc()
 	if cs.exist("n") != nil {
 		t.Errorf("must not exist")

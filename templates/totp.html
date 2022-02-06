@@ -22,20 +22,23 @@
         <article class="message is-danger" data-ng-if="failed">
           <div class="message-body">[[ .i18n.validationFailed ]]</div>
         </article>
+        <article class="message is-info" data-ng-if="!failed">
+          <div class="message-body">[[ .i18n.checkYourTimeAccuracy ]]</div>
+        </article>
         <form name="main" data-ng-submit="solve($event)" data-ng-if="!failed">
           <div class="field">
             <div class="control">
               <input
                 id="inputTOTP"
                 name="totp"
-                pattern="[0-9]{6}"
+                min="100000"
+                max="999999"
                 required
                 data-ng-model="formData.totpValue"
                 data-ng-keypress="($event.charCode === 13 ) ? solve($event) : return"
-                inputmode="numeric"
                 class="input is-large"
                 data-ng-class="{'is-danger': main.totp.$touched && main.totp.$invalid, 'is-success': main.totp.$touched && main.totp.$valid }"
-                type="text"
+                type="number"
                 placeholder="[[ .i18n.totpLabel ]]"
               />
               <progress
@@ -49,7 +52,7 @@
             class="field is-grouped is-grouped-centered is-justify-content-space-around is-align-items-center"
           >
             <div class="control">
-              <button class="button" data-ng-click="reload()">
+              <button class="button" data-ng-click="justReload()">
                 [[ .i18n.reload ]]
               </button>
             </div>

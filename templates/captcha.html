@@ -43,14 +43,15 @@
               <input
                 id="inputCaptcha"
                 name="captcha"
-                pattern="[0-9]{5,7}"
                 required
+                min="10000"
+                max="9999999"
                 data-ng-model="formData.captchaValue"
                 data-ng-keypress="($event.charCode === 13 ) ? solve($event) : return"
                 inputmode="numeric"
                 class="input is-large"
                 data-ng-class="{'is-danger': main.captcha.$touched && main.captcha.$invalid, 'is-success': main.captcha.$touched && main.captcha.$valid }"
-                type="text"
+                type="number"
                 placeholder="[[ .i18n.captchaLabel ]]"
               />
             </div>
@@ -59,7 +60,7 @@
             class="field is-grouped is-grouped-centered is-justify-content-space-around is-align-items-center"
           >
             <div class="control">
-              <button class="button" data-ng-click="reload()">
+              <button class="button" data-ng-click="justReload()">
                 [[ .i18n.reload ]]
               </button>
             </div>

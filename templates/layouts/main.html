@@ -11,6 +11,7 @@
       var config = {
         ipData: [[unescapeJS .ipData]],
         supportInfo: [[unescapeJS .supportInfo]],
+        timeAccuracy: Math.round(Date.now() / 1000) - [[unescapeJS .unixTime]],
         challengeToken: '[[.challengeToken]]',
         lang: '[[.lang]]',
         protectedPath: '[[.protectedPath]]',
@@ -94,7 +95,7 @@
                         </tr>
                         <thead>
                           <tr>
-                            <th class="is-link" colspan="2">[[ .i18n.networkInformation ]]</th>
+                            <th class="is-link" colspan="2">[[ .i18n.yourInformation ]]</th>
                           </tr>
                         </thead>
                         <tr data-ng-if="config.ipData.country">
@@ -125,6 +126,17 @@
                           <td>[[ .i18n.yourChecksum ]]</td>
                           <td dir="ltr">
                             <input dir="ltr" class="input is-small" type="text" readonly value="[[.persistChecksum]]" />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>[[ .i18n.yourTimeAccuracy ]]</td>
+                          <td>
+                            <span data-ng-if="!timeWarning">✅</span>
+                            <span data-ng-if="timeWarning">❌</span>
+                            <span
+                              class="is-family-code"
+                              data-ng-class="{'has-text-danger': timeWarning, 'has-text-success': !timeWarning }"
+                            >{{ getTimeAccuracy() }}</span>
                           </td>
                         </tr>
                       </tbody>

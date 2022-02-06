@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -42,8 +43,9 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 	supportedLanguages, _ := json.Marshal(config.supportedLangauges)
 	supportInfo, _ := json.Marshal(getConfigSupportInfo(c))
 	ipData, _ := json.Marshal(getClientProperties(c))
+	unixTime, _ := json.Marshal(time.Now().Unix())
 
-	config.getLogger().Info().Str("challenge_type", challengeType).Str("ip", ip).Str("rid", requestID).Send()
+	defer config.getLogger().Info().Str("challenge_type", challengeType).Str("ip", ip).Str("rid", requestID).Send()
 
 	// set header
 	c.Set(httpResponseChallengeToken, challengeToken)
@@ -69,6 +71,7 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 
 		// js variables
 		"lang":           lang,
+		"unixTime":       string(unixTime),
 		"challengeToken": challengeToken,
 		"ipData":         string(ipData),
 		"protectedPath":  getProtectedPath(c),

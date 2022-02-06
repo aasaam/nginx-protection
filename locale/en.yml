@@ -12,7 +12,8 @@ yourIP: IP
 yourASN: ISP
 yourChecksum: Checksum
 yourNodeID: Node ID
-networkInformation: Your network information
+yourTimeAccuracy: Your device time accuracy
+yourInformation: Your information
 validationFailed: Validation process failed. please wait for retrying...
 
 
@@ -28,6 +29,7 @@ totp: Time-Based One-Time Password (TOTP)
 totpLabel: One Time Password
 totpChallengeDescription: Please wait to process request...
 totpChallengeFill: Fill the input with your special password
+checkYourTimeAccuracy: Before try to enter password, check your device time accuracy
 
 reload: Reload
 submit: Submit

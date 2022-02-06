@@ -201,7 +201,7 @@ func main() {
 				&cli.StringFlag{
 					Name:    "log-level",
 					Usage:   "Could be one of `panic`, `fatal`, `error`, `warn`, `info`, `debug` or `trace`",
-					Value:   "debug",
+					Value:   "warn",
 					EnvVars: []string{"ASM_LOCALE_DIR"},
 				},
 				&cli.BoolFlag{

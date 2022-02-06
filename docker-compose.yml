@@ -1,0 +1,21 @@
+# Copyright (c) 2021 aasaam software development group
+version: '3'
+
+services:
+  protection-nginx-test:
+    container_name: protection-nginx-test
+    image: nginx:1
+    network_mode: host
+    volumes:
+      - ./test/nginx-dev.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/static:ro
+  nginx-protection:
+    container_name: nginx-protection
+    image: ghcr.io/aasaam/nginx-protection:latest
+    network_mode: host
+    command: run --static-url https://cdn.jsdelivr.net/gh/aasaam/nginx-protection@static --token-secret c3TxUExv+mHcRQ4yOlE6dmW5jvjKhUSmf815NLz0ntM= --client-secret qF/bOhSUzSZKvyOr9sQ7axjNyMCiXEl2tY3HR8jf9JM=
+  protection-rest-captcha-test:
+    container_name: protection-rest-captcha-test
+    image: ghcr.io/aasaam/rest-captcha:latest
+    network_mode: host
+    command: -test-image -return-value

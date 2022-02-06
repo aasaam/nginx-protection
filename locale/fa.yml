@@ -16,7 +16,8 @@ yourIP: IP
 yourASN: ISP
 yourChecksum: Checksum
 yourNodeID: Node ID
-networkInformation: مشخصات شبکه شما
+yourTimeAccuracy: دقت زمانی دستگاه شما
+yourInformation: مشخصات شما
 validationFailed: اعتبار سنجی موفق آمیز نیست. لطفا کمی صبر کنید و مجددا تلاش نمایید.
 
 js: بررسی مرورگر
@@ -31,6 +32,7 @@ totp: رمز عبور یکبارمصرف
 totpLabel: رمز عبور کوتاه مدت
 totpChallengeDescription: لطفا کمی صبر کنید...
 totpChallengeFill: رمز عبور خود را وارد نمایید
+checkYourTimeAccuracy: حتما از دقت زمانی دستگاه خود مطمئن باشید که زمان درست در آن تنظیم شده باشد.
 
 reload: بارگزاری مجدد
 submit: ارسال

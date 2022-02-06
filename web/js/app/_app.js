@@ -12,8 +12,10 @@
   window.app = window.angular.module('p', ['ngMessages']).run([
     '$rootScope',
     '$timeout',
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     function run($rootScope, $timeout) {
       $rootScope.config = window.config;
+      $rootScope.timeWarning = Math.abs(window.config.timeAccuracy) > 5;
 
       $rootScope.ClientJSInfo = function ClientJSInfo() {
         return {
@@ -24,6 +26,27 @@
           screenHeight: window.screen.height,
           userAgent: navigator.userAgent,
         };
+      };
+
+      $rootScope.getTimeAccuracy = function getTimeAccuracy() {
+        if ('Intl' in window && 'RelativeTimeFormat' in Intl) {
+          var fmt = new Intl.RelativeTimeFormat(window.config.lang, {
+            style: 'short',
+          });
+          // eslint-disable-next-line prefer-destructuring
+          var timeAccuracy = window.config.timeAccuracy;
+          if (timeAccuracy <= 120) {
+            return fmt.format(timeAccuracy, 'seconds');
+          }
+          if (timeAccuracy <= 3600) {
+            return fmt.format(timeAccuracy, 'minute');
+          }
+          if (timeAccuracy <= 86400) {
+            return fmt.format(timeAccuracy, 'hour');
+          }
+          return fmt.format(timeAccuracy, 'day');
+        }
+        return window.config.timeAccuracy;
       };
 
       $rootScope.getCountryName = function getCountryName(code) {
@@ -48,6 +71,11 @@
           // eslint-disable-next-line no-self-assign
           window.location = window.location;
         }, timeoutSeconds);
+      };
+
+      $rootScope.justReload = function justReload() {
+        // eslint-disable-next-line no-self-assign
+        window.location = window.location;
       };
 
       $rootScope.getCountryFlag = function getCountryFlag(code) {

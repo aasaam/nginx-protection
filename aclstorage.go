@@ -41,7 +41,7 @@ func (a *aclStorage) add(key string, rule string, name string, userName string, 
 	}
 
 	a.items[key] = i
-	a.count += 1
+	a.count++
 }
 
 func (a *aclStorage) exist(key string) *aclStorageItem {

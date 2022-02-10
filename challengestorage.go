@@ -40,7 +40,7 @@ func (s *challengeStorage) set(key string, lifeTime int64) {
 	defer s.mu.Unlock()
 
 	s.items[key] = time.Now().Unix() + lifeTime
-	s.count += 1
+	s.count++
 }
 
 func (s *challengeStorage) gc() int {

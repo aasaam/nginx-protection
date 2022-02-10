@@ -10,13 +10,15 @@ import (
 type persistToken struct {
 	Type        string `json:"t"`
 	ClientIdent string `json:"c"`
+	Username    string `json:"u"`
 	TTL         int64  `json:"ttl"`
 }
 
-func newPersistToken(typeOfToken string, clientIdent string, ttl int64) *persistToken {
+func newPersistToken(typeOfToken string, clientIdent string, username string, ttl int64) *persistToken {
 	pt := persistToken{
 		Type:        typeOfToken,
 		ClientIdent: clientIdent,
+		Username:    username,
 		TTL:         ttl,
 	}
 

@@ -114,3 +114,12 @@ func getLanguageDirection(lang string) string {
 func isSupportedLangauge(lang string) bool {
 	return supportedLangaugesMap[lang]
 }
+
+func isSupportedLangaugeConfig(lang string, supported []string) bool {
+	for _, supportedLanguage := range supported {
+		if lang == supportedLanguage {
+			return true
+		}
+	}
+	return false
+}

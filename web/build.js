@@ -11,20 +11,15 @@ const uglify = require('uglify-js');
 
 const PROJECT_DIR = path.resolve(__dirname, '..');
 
-const minifyJsApp = async (name) => {
+const minifyJsApp = async () => {
   const mainData = await fs.promises.readFile(
-    `${PROJECT_DIR}/web/js/app/_app.js`,
+    `${PROJECT_DIR}/web/js/app/app.js`,
     { encoding: 'utf8' },
   );
-  const appData = await fs.promises.readFile(
-    `${PROJECT_DIR}/web/js/app/${name}.js`,
-    { encoding: 'utf8' },
-  );
-
-  const compressData = uglify.minify([mainData, appData].join(';'));
+  const compressData = uglify.minify([mainData].join('\n;'));
 
   await fs.promises.writeFile(
-    `${PROJECT_DIR}/static/js/${name}.js`,
+    `${PROJECT_DIR}/static/js/app.js`,
     compressData.code,
   );
 };
@@ -50,9 +45,6 @@ const minifyJsApp = async (name) => {
       `${PROJECT_DIR}/web/node_modules/angular-messages/angular-messages.js`,
       { encoding: 'utf8' },
     ),
-    await fs.promises.readFile(`${PROJECT_DIR}/web/js/lib/functions.js`, {
-      encoding: 'utf8',
-    }),
   ].join(';');
 
   const compressLib = uglify.minify(lib);
@@ -62,10 +54,7 @@ const minifyJsApp = async (name) => {
     compressLib.code,
   );
 
-  await minifyJsApp('js');
-  await minifyJsApp('block');
-  await minifyJsApp('captcha');
-  await minifyJsApp('totp');
+  await minifyJsApp();
 
   await fs.promises.writeFile(
     `${PROJECT_DIR}/static/css/main-rtl.css`,

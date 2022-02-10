@@ -75,13 +75,67 @@ func httpChallengePost(c *fiber.Ctx, config *config, challengeStorage *challenge
 
 	valid := false
 
+	var ldapCookie *fiber.Cookie = nil
+	userName := ""
+
 	switch challenge.ChallengeType {
 	case challengeTypeJS:
 		valid = challenge.verifyJSValue(chReq.JSValue)
 	case challengeTypeCaptcha:
 		valid = challenge.verifyJSValue(chReq.JSValue) && challenge.verifyCaptchaValue(chReq.CaptchaValue)
+	case challengeTypeLDAP:
+		preValidation := challenge.verifyJSValue(chReq.JSValue) && challenge.verifyCaptchaValue(chReq.CaptchaValue)
+		if preValidation {
+			ldapURL := c.Locals(localVarLDAPURL).(string)
+			ldapReadonlyUsername := c.Locals(localVarLDAPReadonlyUsername).(string)
+			ldapReadonlyPassword := c.Locals(localVarLDAPReadonlyPassword).(string)
+			ldapBaseDN := c.Locals(localVarLDAPBaseDN).(string)
+			ldapFilter := c.Locals(localVarLDAPFilter).(string)
+			ldapAttributes := c.Locals(localVarLDAPAttributes).(string)
+
+			success, loginErr, ldapConfigError := ldapLogin(
+				ldapURL,
+				ldapReadonlyUsername,
+				ldapReadonlyPassword,
+				ldapBaseDN,
+				ldapFilter,
+				ldapAttributes,
+				chReq.LDAPUsername,
+				chReq.LDAPPassword,
+			)
+
+			if ldapConfigError != nil {
+				defer config.getLogger().
+					Error().
+					Str(logType, logTypeLDAPError).
+					Str(logPropertyError, ldapConfigError.Error()).
+					Str(logPropertyChallengeType, challenge.ChallengeType).
+					Str(logPropertyIP, ip).
+					Str(logPropertyRequestID, requestID).
+					Send()
+			} else if loginErr != nil {
+				defer config.getLogger().
+					Warn().
+					Str(logType, logTypeLDAPError).
+					Str(logPropertyError, loginErr.Error()).
+					Str(logPropertyChallengeType, challenge.ChallengeType).
+					Str(logPropertyIP, ip).
+					Str(logPropertyRequestID, requestID).
+					Send()
+			} else {
+				valid = success
+				userName = chReq.LDAPUsername
+				ldapCookie = &fiber.Cookie{
+					Name:     defaultUsernameCookieName,
+					Value:    chReq.LDAPUsername,
+					HTTPOnly: true,
+					Path:     "/",
+					Expires:  time.Now().Add(time.Second * time.Duration(challenge.TTL)),
+				}
+			}
+		}
 	case challengeTypeTOTP:
-		valid = challenge.verifyJSValue(chReq.JSValue) && challenge.verifyTOTP(chReq.TOTPCode)
+		valid = challenge.verifyJSValue(chReq.JSValue) && challenge.verifyTOTP(chReq.TOTPPassword)
 	}
 
 	if valid {
@@ -95,17 +149,23 @@ func httpChallengePost(c *fiber.Ctx, config *config, challengeStorage *challenge
 
 		defer prometheusRequestChallengeSuccess.WithLabelValues(challenge.ChallengeType).Inc()
 
-		persistToken := newPersistToken(challenge.ChallengeType, challenge.ClientPersistChecksum, challenge.TTL)
+		persistToken := newPersistToken(challenge.ChallengeType, challenge.ClientPersistChecksum, userName, challenge.TTL)
 		tokenString := persistToken.generate(config.tokenSecret)
 
-		cookie := new(fiber.Cookie)
-		cookie.Name = c.Get(httpRequestHeaderConfigCookie, defaultCookieName)
-		cookie.Value = tokenString
-		cookie.HTTPOnly = true
-		cookie.Path = "/"
-		cookie.Expires = time.Now().Add(time.Second * time.Duration(challenge.TTL))
+		tokenCookie := &fiber.Cookie{
+			Name:     c.Get(httpRequestHeaderConfigCookie, defaultCookieName),
+			Value:    tokenString,
+			HTTPOnly: true,
+			Path:     "/",
+			Expires:  time.Now().Add(time.Second * time.Duration(challenge.TTL)),
+		}
+
 		c.Set(httpResponseChallengeResult, tokenString)
-		c.Cookie(cookie)
+
+		c.Cookie(tokenCookie)
+		if ldapCookie != nil {
+			c.Cookie(ldapCookie)
+		}
 		return c.JSON(tokenString)
 	}
 

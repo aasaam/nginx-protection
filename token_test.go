@@ -8,7 +8,7 @@ import (
 
 func TestPersistToken(t *testing.T) {
 	secret := aesGo.GenerateKey()
-	tk1 := newPersistToken(challengeTypeJS, "c1", 1)
+	tk1 := newPersistToken(challengeTypeJS, "c1", "", 1)
 	str1 := tk1.generate(secret)
 	_, err := newPersistTokenFromString(str1, secret)
 	if err != nil {

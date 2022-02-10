@@ -18,11 +18,14 @@ require (
 )
 
 require (
+	github.com/Azure/go-ntlmssp v0.0.0-20211209120228-48547f28849e // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
+	github.com/go-asn1-ber/asn1-ber v1.5.3 // indirect
+	github.com/go-ldap/ldap/v3 v3.4.1 // indirect
 	github.com/gofiber/utils v0.1.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/klauspost/compress v1.14.1 // indirect
@@ -34,6 +37,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.33.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
+	golang.org/x/crypto v0.0.0-20220208050332-20e1d8d225ab // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	rsc.io/qr v0.2.0 // indirect

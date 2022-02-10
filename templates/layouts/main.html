@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>[[.title]] - [[.organizationTitle]]</title>
     <link rel="preload" href="[[.staticURL]]/js/lib.js" as="script" />
-    <link rel="preload" href="[[.staticURL]]/js/[[.challengeType]].js" as="script" />
+    <link rel="preload" href="[[.staticURL]]/js/app.js" as="script" />
     <meta name="robots" content="noindex,nofollow" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <script>
@@ -15,9 +15,10 @@
         challengeToken: '[[.challengeToken]]',
         lang: '[[.lang]]',
         protectedPath: '[[.protectedPath]]',
+        timeoutSeconds: '[[.timeoutSeconds]]',
         waitSeconds: '[[.waitSeconds]]',
         challengeType: '[[.challengeType]]',
-        baseURL: '[[.baseURL]]',
+        baseURL: '[[.baseURL]]'
       };
     </script>
     <link rel="stylesheet" href="[[.staticURL]]/css/main-[[.dir]].css" />
@@ -57,7 +58,7 @@
           <div class="column is-2"></div>
           <div class="column is-8">
             <div class="card">[[embed]]</div>
-            <hr />
+            <div class="py-2"></div>
             <div class="card">
               <div class="card-content">
                 <div class="content">
@@ -65,7 +66,7 @@
                     <table class="table is-fullwidth is-hoverable">
                       <thead>
                         <tr data-ng-if="config.supportInfo.email || config.supportInfo.tel || config.supportInfo.url">
-                          <th class="is-success" colspan="2">[[ .i18n.administratorContactInfo ]]</th>
+                          <th colspan="2">[[ .i18n.administratorContactInfo ]]</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -95,7 +96,7 @@
                         </tr>
                         <thead>
                           <tr>
-                            <th class="is-link" colspan="2">[[ .i18n.yourInformation ]]</th>
+                            <th colspan="2">[[ .i18n.yourInformation ]]</th>
                           </tr>
                         </thead>
                         <tr data-ng-if="config.ipData.country">
@@ -116,27 +117,21 @@
                             <span class="is-family-code"> {{ config.ipData.asn }} ({{ config.ipData.asn_org }}) </span>
                           </td>
                         </tr>
+                        <tr>
+                          <td>[[ .i18n.yourTimeAccuracy ]]</td>
+                          <td dir="ltr">
+                            <span data-ng-if="times.timeAccuracy">✅</span>
+                            <span data-ng-if="!times.timeAccuracy">❌</span>
+                            <span
+                              data-ng-if="!times.timeAccuracy"
+                              class="is-family-code has-text-danger"
+                            >{{ getTimeAccuracy() }}</span>
+                          </td>
+                        </tr>
                         <tr data-ng-if="config.ipData.nodeID">
                           <td>[[ .i18n.yourNodeID ]]</td>
                           <td dir="ltr">
                             <span class="is-family-code">{{ config.ipData.nodeID }}</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>[[ .i18n.yourChecksum ]]</td>
-                          <td dir="ltr">
-                            <input dir="ltr" class="input is-small" type="text" readonly value="[[.persistChecksum]]" />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>[[ .i18n.yourTimeAccuracy ]]</td>
-                          <td>
-                            <span data-ng-if="!timeWarning">✅</span>
-                            <span data-ng-if="timeWarning">❌</span>
-                            <span
-                              class="is-family-code"
-                              data-ng-class="{'has-text-danger': timeWarning, 'has-text-success': !timeWarning }"
-                            >{{ getTimeAccuracy() }}</span>
                           </td>
                         </tr>
                       </tbody>
@@ -168,6 +163,6 @@
       </div>
     </div>
     <script src="[[.staticURL]]/js/lib.js"></script>
-    <script src="[[.staticURL]]/js/[[.challengeType]].js"></script>
+    <script src="[[.staticURL]]/js/app.js"></script>
   </body>
 </html>

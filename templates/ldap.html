@@ -1,5 +1,5 @@
 <header class="card-header has-background-info-dark">
-  <p class="card-header-title is-size-4 has-text-light">[[ .i18n.captcha ]]</p>
+  <p class="card-header-title is-size-4 has-text-light">[[ .i18n.ldap ]]</p>
 </header>
 <div class="card-content">
   <div class="content" data-ng-if="times.progress < 100">
@@ -7,7 +7,7 @@
       <div class="column is-2"></div>
       <div class="column is-8">
         <div class="py-3">
-          <div>[[ unescapeHTML .i18n.captchaChallengeWaiting ]]</div>
+          <div>[[ unescapeHTML .i18n.ldapChallengeWaiting ]]</div>
         </div>
         <div class="py-3">
           <progress
@@ -41,7 +41,43 @@
         >
           <div class="notification">
             <div class="content">
-              [[ unescapeHTML .i18n.captchaChallengeForm ]]
+              [[ unescapeHTML .i18n.ldapChallengeForm ]]
+            </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <label class="label">[[ .i18n.ldapUsername ]]:</label>
+              <input
+                id="inputUsername"
+                name="username"
+                dir="ltr"
+                required
+                data-ng-model="formData.username"
+                data-ng-keypress="($event.charCode === 13 ) ? solve($event) : return"
+                class="input is-large"
+                data-ng-class="{'is-danger': main.username.$touched && main.username.$invalid, 'is-success': main.username.$touched && main.username.$valid }"
+                type="text"
+                placeholder="[[ .i18n.ldapUsername ]]"
+                title="[[ .i18n.ldapUsername ]]"
+              />
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">[[ .i18n.ldapPassword ]]:</label>
+            <div class="control">
+              <input
+                id="inputUsername"
+                name="password"
+                dir="ltr"
+                required
+                data-ng-model="formData.password"
+                data-ng-keypress="($event.charCode === 13 ) ? solve($event) : return"
+                class="input is-large"
+                data-ng-class="{'is-danger': main.password.$touched && main.password.$invalid, 'is-success': main.password.$touched && main.password.$valid }"
+                type="password"
+                placeholder="[[ .i18n.ldapPassword ]]"
+                title="[[ .i18n.ldapPassword ]]"
+              />
             </div>
           </div>
           <p>
@@ -52,8 +88,8 @@
             />
           </p>
           <div class="field">
-            <label class="label">[[ .i18n.captchaLabel ]]:</label>
             <div class="control">
+              <label class="label">[[ .i18n.captchaLabel ]]:</label>
               <input
                 id="inputCaptcha"
                 name="captcha"
@@ -86,7 +122,7 @@
                 data-ng-disabled="main.$invalid"
                 data-ng-click="submit($event)"
               >
-                [[ .i18n.submit ]]
+                [[ .i18n.ldapLogin ]]
               </button>
             </div>
           </div>

@@ -2,50 +2,70 @@
   <p class="card-header-title is-size-4 has-text-light">[[ .i18n.totp ]]</p>
 </header>
 <div class="card-content">
-  <div class="content" data-ng-if="progress < 100">
-    <div class="py-3">
-      <p>[[ .i18n.totpChallengeDescription ]]</p>
-    </div>
-    <div class="py-3">
-      <progress
-        class="progress is-small is-info"
-        data-ng-class="{'is-info' : progress < 100, 'is-success': progress >= 100}"
-        value="{{ progress }}"
-        max="100"
-      ></progress>
-    </div>
-  </div>
-  <div class="content" data-ng-if="progress >= 100">
+  <div class="content" data-ng-if="times.progress < 100">
     <div class="columns">
       <div class="column is-2"></div>
       <div class="column is-8">
-        <article class="message is-danger" data-ng-if="failed">
-          <div class="message-body">[[ .i18n.validationFailed ]]</div>
-        </article>
-        <article class="message is-info" data-ng-if="!failed">
-          <div class="message-body">[[ .i18n.checkYourTimeAccuracy ]]</div>
-        </article>
-        <form name="main" data-ng-submit="solve($event)" data-ng-if="!failed">
+        <div class="py-3">
+          <div>[[ unescapeHTML .i18n.totpChallengeWaiting ]]</div>
+        </div>
+        <div class="py-3">
+          <progress
+            class="progress is-small"
+            data-ng-class="{'is-info' : times.progress < 100, 'is-success': times.progress >= 100}"
+            value="{{ times.progress }}"
+            max="100"
+          ></progress>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="content" data-ng-if="times.progress >= 100">
+    <div class="columns">
+      <div class="column is-2"></div>
+      <div class="column is-8">
+        <div class="notification is-danger" data-ng-if="!times.timeAccuracy">
+          <div class="content">
+            [[ unescapeHTML .i18n.checkYourTimeAccuracy ]]
+          </div>
+        </div>
+        <div class="notification is-danger" data-ng-if="formData.failed">
+          <p>[[ .i18n.validationFailed ]]</p>
+          <button
+            class="button"
+            data-ng-click="justReload()"
+            data-ng-if="formData.failedReload"
+          >
+            [[ .i18n.reload ]]
+          </button>
+        </div>
+        <form
+          name="main"
+          data-ng-submit="submit($event)"
+          data-ng-if="!formData.failed"
+        >
+          <div class="notification">
+            <div class="content">[[ unescapeHTML .i18n.totpChallengeForm ]]</div>
+          </div>
           <div class="field">
+            <label class="label">[[ .i18n.totpLabel ]]:</label>
             <div class="control">
               <input
                 id="inputTOTP"
                 name="totp"
+                dir="ltr"
+                required
                 min="100000"
                 max="999999"
-                required
                 data-ng-model="formData.totpValue"
                 data-ng-keypress="($event.charCode === 13 ) ? solve($event) : return"
+                inputmode="numeric"
                 class="input is-large"
                 data-ng-class="{'is-danger': main.totp.$touched && main.totp.$invalid, 'is-success': main.totp.$touched && main.totp.$valid }"
                 type="number"
                 placeholder="[[ .i18n.totpLabel ]]"
+                title="[[ .i18n.totpLabel ]]"
               />
-              <progress
-                class="progress is-small {{ totpProgressClass }}"
-                value="{{ totpProgress }}"
-                max="100"
-              ></progress>
             </div>
           </div>
           <div
@@ -60,7 +80,7 @@
               <button
                 class="button is-success is-large"
                 data-ng-disabled="main.$invalid"
-                data-ng-click="solve($event)"
+                data-ng-click="submit($event)"
               >
                 [[ .i18n.submit ]]
               </button>
@@ -69,5 +89,11 @@
         </form>
       </div>
     </div>
+    <progress
+      data-ng-if="!formData.failed"
+      class="progress is-small"
+      value="{{ times.timeoutProgress }}"
+      max="{{ times.timeoutTotal }}"
+    ></progress>
   </div>
 </div>

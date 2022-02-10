@@ -51,6 +51,39 @@ func checkConfiguration(c *fiber.Ctx) error {
 		}
 	}
 
+	ldapURL := ""
+	ldapReadonlyUsername := ""
+	ldapReadonlyPassword := ""
+	ldapBaseDN := ""
+	ldapFilter := ""
+	ldapAttributes := ""
+	if challengeType == challengeTypeLDAP {
+		ldapURL = c.Get(httpRequestHeaderConfigLDAPURL, "")
+		if ldapURL == "" {
+			return errors.New("invalid ldap url")
+		}
+		ldapReadonlyUsername = c.Get(httpRequestHeaderConfigLDAPReadonlyUsername, "")
+		if ldapReadonlyUsername == "" {
+			return errors.New("invalid ldap readonly username")
+		}
+		ldapReadonlyPassword = c.Get(httpRequestHeaderConfigLDAPReadonlyPassword, "")
+		if ldapReadonlyPassword == "" {
+			return errors.New("invalid ldap readonly password")
+		}
+		ldapBaseDN = c.Get(httpRequestHeaderConfigLDAPBaseDN, "")
+		if ldapBaseDN == "" {
+			return errors.New("invalid ldap base dn")
+		}
+		ldapFilter = c.Get(httpRequestHeaderConfigLDAPFilter, "")
+		if ldapFilter == "" {
+			return errors.New("invalid ldap filter")
+		}
+		ldapAttributes = c.Get(httpRequestHeaderConfigLDAPAttributes, "")
+		if ldapAttributes == "" {
+			return errors.New("invalid ldap attributes")
+		}
+	}
+
 	requestID := c.Get(httpRequestHeaderRequestID, "")
 	if len(requestID) < 16 {
 		return errors.New("invalid request id")
@@ -60,6 +93,15 @@ func checkConfiguration(c *fiber.Ctx) error {
 	c.Locals(localVarRequestID, requestID)
 	c.Locals(localVarTOTPSecret, totpSecret)
 	c.Locals(localVarChallengeType, challengeType)
+
+	// ldap
+	c.Locals(localVarLDAPURL, ldapURL)
+	c.Locals(localVarLDAPBaseDN, ldapBaseDN)
+	c.Locals(localVarLDAPReadonlyUsername, ldapReadonlyUsername)
+	c.Locals(localVarLDAPReadonlyPassword, ldapReadonlyPassword)
+	c.Locals(localVarLDAPFilter, ldapFilter)
+	c.Locals(localVarLDAPAttributes, ldapAttributes)
+
 	c.Locals(localVarClientTemporaryChecksum, base64Hash(clientTemporaryChecksum))
 	c.Locals(localVarClientPersistChecksum, base64Hash(clientPersistChecksum))
 	return nil
@@ -93,24 +135,24 @@ func getClientProperties(c *fiber.Ctx) *clientProperties {
 	return &p
 }
 
-// getConfigWaitSeconds rage is 3-180 seconds
+// getConfigWaitSeconds rage is 1-180 seconds
 func getConfigWaitSeconds(c *fiber.Ctx) int64 {
 	wait := c.Get(httpRequestHeaderConfigWait, "0")
 	waitSeconds, err := strconv.ParseInt(wait, 10, 64)
 	if err != nil {
-		return 1
+		return 3
 	}
-	return minMaxDefault64(waitSeconds, 1, 180)
+	return minMaxDefault64(waitSeconds, 2, 180)
 }
 
-// getConfigTimeoutSeconds rage is 200-600 seconds
+// getConfigTimeoutSeconds rage is 300-1800 seconds
 func getConfigTimeoutSeconds(c *fiber.Ctx) int64 {
 	timeout := c.Get(httpRequestHeaderConfigTimeout, "0")
 	timeoutSeconds, err := strconv.ParseInt(timeout, 10, 64)
 	if err != nil {
-		return 300
+		return 600
 	}
-	return minMaxDefault64(timeoutSeconds, 200, 600)
+	return minMaxDefault64(timeoutSeconds, 300, 1800)
 }
 
 // getConfigTTLSeconds rage is 3600-604800 seconds (1 hour to 1 week)
@@ -130,6 +172,17 @@ func getConfigUnauthorizedStatus(c *fiber.Ctx) int {
 		return 403
 	}
 	return minMaxDefault(statusCode, 400, 499)
+}
+
+func getSupportedLangauges(c *fiber.Ctx, config *config) []string {
+	supportedLanguages := []string{}
+	headerValue := strings.Split(c.Get(httpRequestHeaderConfigSupportedLanguages, ""), ",")
+	for _, lang := range headerValue {
+		if isSupportedLangauge(lang) {
+			supportedLanguages = append(supportedLanguages, lang)
+		}
+	}
+	return supportedLanguages
 }
 
 func getLanguage(c *fiber.Ctx, config *config) string {
@@ -153,8 +206,7 @@ func getConfigSupportInfo(c *fiber.Ctx) *supportInfo {
 	return &supportInfo
 }
 
-func getConfigI18nOrganizationTitle(c *fiber.Ctx, config *config) string {
-	lang := getLanguage(c, config)
+func getConfigI18nOrganizationTitle(c *fiber.Ctx, config *config, lang string) string {
 	title := c.Get(httpRequestHeaderConfigOrganizationTitle, defaultOrganizationName)
 
 	v := c.Get(httpRequestHeaderConfigI18nOrganizationTitle, "_")

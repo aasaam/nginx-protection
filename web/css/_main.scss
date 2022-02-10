@@ -17,8 +17,15 @@
   }
 }
 
+progress::-webkit-progress-value,
+progress::-moz-progress-bar {
+  transition: width 0.2s linear !important;
+}
+
 .captcha {
   margin: 0 auto;
   border: 1px solid #999;
   border-radius: 8px;
+  width: 100%;
+  height: auto;
 }

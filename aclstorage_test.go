@@ -11,8 +11,8 @@ func TestACLStorage(t *testing.T) {
 	if cs.exist("n") != nil {
 		t.Errorf("must not exist")
 	}
-	cs.add("n", "acl", "name", 1)
-	cs.add("m", "acl", "name", 5)
+	cs.add("n", "acl", "name", "", 1)
+	cs.add("m", "acl", "name", "", 5)
 	if cs.exist("n") == nil {
 		t.Errorf("exist")
 	}

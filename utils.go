@@ -7,7 +7,9 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	mathRandom "math/rand"
 	"net/url"
+	"time"
 )
 
 var noPadding rune = -1
@@ -78,4 +80,10 @@ func getURLPath(u *url.URL) string {
 		return fmt.Sprintf("%s?%s", u.Path, u.RawQuery)
 	}
 	return u.Path
+}
+
+func getHumanEmoji() string {
+	mathRandom.Seed(time.Now().Unix())
+	i := mathRandom.Int() % len(humanEmojis)
+	return humanEmojis[i]
 }

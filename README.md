@@ -14,6 +14,13 @@
   </p>
 </div>
 
+## Challenge types
+
+* JavaScript `js` (Just simple eval function for browser runtime)
+* Captcha `captcha` (Multilingual captcha base on configured language)
+* Time-based one-time password `totp` (Standard `SHA1,6 Digits, 30 second interval`)
+* LDAP `ldap` (OpenLDAP or ActiveDirectory)
+
 <div>
   <p align="center">
     <img alt="aasaam software development group" width="64" src="https://raw.githubusercontent.com/aasaam/information/master/logo/aasaam.svg">

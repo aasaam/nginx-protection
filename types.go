@@ -8,10 +8,13 @@ import (
 
 const defaultOrganizationName = "aasaam software development group"
 const defaultCookieName = "aasaam_protection"
+const defaultUsernameCookieName = "protection_auth_user_name"
 
 const misconfigureStatus = fiber.StatusNotImplemented
 
 const httpRequestHeaderClientAPIKeyHeaderName = "x-protection-api-key"
+
+const ldapUsernamePlaceHolder = "__USERNAME__"
 
 const (
 	localVarIP                      = "ip"
@@ -21,6 +24,12 @@ const (
 	localVarChallengeType           = "challenge_type"
 	localVarClientTemporaryChecksum = "client_temporary_checksum"
 	localVarClientPersistChecksum   = "client_persist_checksum"
+	localVarLDAPURL                 = "ldap_url"
+	localVarLDAPReadonlyUsername    = "ldap_readonly_username"
+	localVarLDAPReadonlyPassword    = "ldap_readonly_password"
+	localVarLDAPBaseDN              = "ldap_base_dn"
+	localVarLDAPFilter              = "ldap_filter"
+	localVarLDAPAttributes          = "ldap_attributes"
 )
 
 const (
@@ -36,11 +45,13 @@ const (
 	challengeTypeJS      = "js"
 	challengeTypeCaptcha = "captcha"
 	challengeTypeTOTP    = "totp"
+	challengeTypeLDAP    = "ldap"
 )
 
 const (
 	logType                  = "type"
 	logTypeACL               = "acl"
+	logTypeLDAPError         = "ldap_error"
 	logTypeChallengeGenerate = "challenge_new"
 	logTypeChallengeFailed   = "challenge_failed"
 	logTypeChallengeSuccess  = "challenge_success"
@@ -64,6 +75,7 @@ const (
 	logPropertyACL           = "acl"
 	logPropertyValue         = "value"
 	logPropertyRequestID     = "rid"
+	logPropertyUsername      = "username"
 )
 
 const (
@@ -76,6 +88,7 @@ const (
 	httpRequestHeaderConfigSupportURL            = "X-Protection-Config-Support-URL"
 	httpRequestHeaderConfigChallenge             = "X-Protection-Config-Challenge"
 	httpRequestHeaderConfigLang                  = "X-Protection-Config-Lang"
+	httpRequestHeaderConfigSupportedLanguages    = "X-Protection-Config-Supported-Languages"
 	httpRequestHeaderConfigCaptchaDifficulty     = "X-Protection-Config-Captcha-Difficulty"
 	httpRequestHeaderConfigTTL                   = "X-Protection-Config-TTL"
 	httpRequestHeaderConfigTimeout               = "X-Protection-Config-Timeout"
@@ -86,6 +99,13 @@ const (
 	httpRequestHeaderConfigOrganizationTitle     = "X-Protection-Config-Organization-Title"
 	httpRequestHeaderConfigOrganizationBrandIcon = "X-Protection-Config-Organization-Brand-Icon"
 	httpRequestHeaderConfigUnauthorizedStatus    = "X-Protection-Config-Unauthorized-Status"
+	httpRequestHeaderConfigLDAPURL               = "X-Protection-Config-LDAP-URL"
+	httpRequestHeaderConfigLDAPReadonlyUsername  = "X-Protection-Config-LDAP-Readonly-Username"
+	httpRequestHeaderConfigLDAPReadonlyPassword  = "X-Protection-Config-LDAP-Readonly-Password"
+	httpRequestHeaderConfigLDAPBaseDN            = "X-Protection-Config-LDAP-Base-DN"
+	httpRequestHeaderConfigLDAPFilter            = "X-Protection-Config-LDAP-Filter"
+	httpRequestHeaderConfigLDAPAttributes        = "X-Protection-Config-LDAP-Attributes"
+	httpRequestHeaderConfigLDAPLoginPattern      = "X-Protection-Config-LDAP-Login-Pattern"
 
 	// Client:
 	httpRequestHeaderClientTemporaryChecksum = "X-Protection-Client-Temporary-Checksum"
@@ -113,9 +133,11 @@ type supportInfo struct {
 
 type challengeRequest struct {
 	ChallengeToken string `json:"t"`
-	JSValue        string `json:"j_v,omitempty"`
-	CaptchaValue   int    `json:"c_v,omitempty"`
-	TOTPCode       string `json:"t_v,omitempty"`
+	LDAPUsername   string `json:"lu,omitempty"`
+	LDAPPassword   string `json:"lp,omitempty"`
+	JSValue        string `json:"j,omitempty"`
+	CaptchaValue   int    `json:"c,omitempty"`
+	TOTPPassword   string `json:"totp,omitempty"`
 }
 
 type challengeResponse struct {
@@ -124,10 +146,12 @@ type challengeResponse struct {
 	CaptchaProblem string `json:"captcha,omitempty"`
 }
 
+var humanEmojis = []string{"🧑‍💻", "🧑🏻‍💻", "🧑🏼‍💻", "🧑🏽‍💻", "🧑🏾‍💻", "🧑🏿‍💻"}
+
 var rtlLanguages = []string{"ar", "dv", "fa", "he", "ps", "ur", "yi"}
 var rtlLanguagesMap map[string]bool
 
-var supportedChallenges = []string{challengeTypeBlock, challengeTypeJS, challengeTypeCaptcha, challengeTypeTOTP}
+var supportedChallenges = []string{challengeTypeBlock, challengeTypeJS, challengeTypeCaptcha, challengeTypeTOTP, challengeTypeLDAP}
 var supportedChallengesMap map[string]bool
 
 var supportedLangauges = []string{"fa", "en"}

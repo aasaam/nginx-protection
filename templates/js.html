@@ -7,13 +7,13 @@
       <div class="column is-2"></div>
       <div class="column is-8">
         <div class="py-3">
-          <p>[[ .i18n.jsChallengeDescription ]]</p>
+          <div>[[ unescapeHTML .i18n.jsChallengeWaiting ]]</div>
         </div>
         <div class="py-3">
           <progress
-            class="progress is-small is-info"
-            data-ng-class="{'is-info' : progress < 100, 'is-success': progress >= 100}"
-            value="{{ progress }}"
+            class="progress is-small"
+            data-ng-class="{'is-info' : times.progress < 100, 'is-success': times.progress >= 100}"
+            value="{{ times.progress }}"
             max="100"
           ></progress>
         </div>

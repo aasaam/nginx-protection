@@ -1,8 +1,10 @@
 block: Access denied
 blockDescription: |
-  According to <strong>your network information</strong> your access is block by administrator.
-  <br />
-  For more information call administrators.
+  <p>
+    According to <strong>your network information</strong> your access is block by <strong>administrator</strong>.
+    <br />
+    For more information call administrators.
+  </p>
 administratorContactInfo: Administrator contact information
 supportEmail: EMail
 supportTel: Telephone
@@ -12,24 +14,42 @@ yourIP: IP
 yourASN: ISP
 yourChecksum: Checksum
 yourNodeID: Node ID
-yourTimeAccuracy: Your device time accuracy
+yourTimeAccuracy: Time sync problem?
 yourInformation: Your information
-validationFailed: Validation process failed. please wait for retrying...
-
+validationFailed: Validation process failed.
+checkYourTimeAccuracy: |
+  <p>Seems your device time is not accurate</p>
+  <p>Check your device time synchronized before enter TOTP password</p>
 
 js: Checking browser
-jsChallengeDescription: Please wait to verify your browser...
+jsChallengeWaiting: |
+  <p>Please <strong>wait</strong> to verify your browser...</p>
 
-captcha: Bot detection
-captchaLabel: Number in image
-captchaChallengeDescription: Please wait to process request...
-captchaChallengeFill: Fill the input with number that show in image
+captcha: Captcha challenge
+captchaLabel: Enter image(CAPTCHA) number here
+captchaChallengeWaiting: |
+  <p>Please <strong>wait</strong> to verify your browser...</p>
+captchaChallengeForm: |
+  <p>For security reason and prevent bot attempts, you will need fill the captcha value.</p>
+  <p>Fill the input with number that show in image(<strong>CAPTCHA</strong>)</p>
 
 totp: Time-Based One-Time Password (TOTP)
 totpLabel: One Time Password
-totpChallengeDescription: Please wait to process request...
-totpChallengeFill: Fill the input with your special password
-checkYourTimeAccuracy: Before try to enter password, check your device time accuracy
+totpChallengeWaiting: |
+  <p>Please <strong>wait</strong> to verify your browser...</p>
+totpChallengeForm: |
+  <p>This is protected resource by <strong>administrator</strong>.</p>
+  <p>For access this resource, fill the input with your <strong>time-based password</strong></p>
+
+ldap: Organization user login
+ldapUsername: Username
+ldapPassword: Password
+ldapLogin: Login
+ldapChallengeWaiting: |
+  <p>Please <strong>wait</strong> to verify your browser...</p>
+ldapChallengeForm: |
+  <p>This is protected resource by <strong>administrator</strong>, you can using your own organization credential(username, password) for access this resource.</p>
+  <p>Login with your own <strong>Username</strong> and <strong>Password</strong> and fill the input with number that show in image(CAPTCHA) for login.</p>
 
 reload: Reload
 submit: Submit

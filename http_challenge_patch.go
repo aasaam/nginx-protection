@@ -78,6 +78,23 @@ func httpChallengePatch(c *fiber.Ctx, config *config) error {
 		}
 		chResp.JSProblem = challenge.setJSValue()
 		chResp.CaptchaProblem = image
+	case challengeTypeLDAP:
+		image, err := challenge.setCaptchaValue(config.restCaptchaURL, c.Get(httpRequestHeaderConfigCaptchaDifficulty, "hard"))
+		if err != nil {
+			errorMessage := "cannot get image from captcha server"
+
+			defer config.getLogger().
+				Error().
+				Str(logPropertyChallengeType, challenge.ChallengeType).
+				Str(logType, logTypeChallengeFailed).
+				Str(logPropertyIP, ip).
+				Str(logPropertyRequestID, requestID).
+				Msg(errorMessage)
+
+			return errors.New(errorMessage)
+		}
+		chResp.JSProblem = challenge.setJSValue()
+		chResp.CaptchaProblem = image
 	case challengeTypeTOTP:
 		chResp.JSProblem = challenge.setJSValue()
 	}

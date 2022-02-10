@@ -232,7 +232,7 @@ func TestHTTPTest03(t *testing.T) {
 		t.Errorf("must response")
 	}
 	tokenString2 := resp2.Header.Get(httpResponseChallengeToken)
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 3)
 	chReq2 := challengeRequest{
 		ChallengeToken: tokenString2,
 	}
@@ -249,6 +249,7 @@ func TestHTTPTest03(t *testing.T) {
 	resp22, _ := httpApp.Test(req22)
 	if resp22.StatusCode != 200 {
 		t.Errorf("must response")
+		return
 	}
 	tokenString22 := resp22.Header.Get(httpResponseChallengeToken)
 	challenge22, _ := newChallengeFromString(tokenString22, clientSecret)
@@ -256,7 +257,10 @@ func TestHTTPTest03(t *testing.T) {
 		ChallengeToken: tokenString22,
 		JSValue:        challenge22.JSChallengeValue,
 	}
-	chReq22JSON, _ := json.Marshal(chReq22)
+	chReq22JSON, errChReq22JSON := json.Marshal(chReq22)
+	if errChReq22JSON != nil {
+		t.Error(errChReq22JSON)
+	}
 	req222 := httptest.NewRequest("POST", "/.well-known/protection/challenge", bytes.NewBuffer(chReq22JSON))
 	req222.Header.Set("X-Forwarded-For", ip)
 	req222.Header.Set(httpRequestHeaderRequestID, aesGo.GenerateKey())
@@ -313,9 +317,10 @@ func TestHTTPTest04(t *testing.T) {
 	resp2, _ := httpApp.Test(req2)
 	if resp2.StatusCode != 200 {
 		t.Errorf("must response")
+		return
 	}
 	tokenString2 := resp2.Header.Get(httpResponseChallengeToken)
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 3)
 	chReq2 := challengeRequest{
 		ChallengeToken: tokenString2,
 	}
@@ -332,6 +337,7 @@ func TestHTTPTest04(t *testing.T) {
 	resp22, _ := httpApp.Test(req22)
 	if resp22.StatusCode != 200 {
 		t.Errorf("must response")
+		return
 	}
 	tokenString22 := resp22.Header.Get(httpResponseChallengeToken)
 	challenge22, _ := newChallengeFromString(tokenString22, clientSecret)

@@ -66,6 +66,9 @@ func newChallenge(
 }
 
 func newChallengeFromString(tokenString string, secret string) (*challenge, error) {
+	if tokenString == "" {
+		return nil, errors.New("empty token data")
+	}
 	aes := aesGo.NewAasaamAES(secret)
 	data := aes.DecryptTTL(tokenString)
 	if data == "" {

@@ -1,38 +1,115 @@
 block: دسترسی امکان پذیر نیست
 blockDescription: |
-  طبق
-  <strong>مشخصات شبکه شما</strong>
-  دسترسی به این سامانه امکان پذیر نمی باشد.
-  <br />
-  برای اطلاعات بیشتر می‌توانید با
-  <strong>بخش فنی</strong>
-  سامانه تماس بگیرید.
-administratorContactInfo: اطلاعات تماس با بخش فنی
+  <p>
+    طبق
+    <strong>
+      مشخصات شبکه شما
+    </strong>
+    دسترسی شما مجاز نمی‌باشد.
+    <br />
+    برای اطلاعات بیشتر با بخش فنی تماس بگیرید.
+  </p>
+administratorContactInfo: مشخصات مدیریت بخش فنی
 supportEmail: ایمیل
-supportTel: شماره تماس
-supportURL: آدرس اینترنتی
+supportTel: تلفن
+supportURL: نشانی وب
 yourCountry: کشور
-yourIP: IP
-yourASN: ISP
+yourIP: آی‌پی(IP)
+yourASN: آی‌اس‌پی(ISP)
 yourChecksum: Checksum
-yourNodeID: Node ID
-yourTimeAccuracy: دقت زمانی دستگاه شما
+yourNodeID: نقطه اتصال(Node ID)
+yourTimeAccuracy: وضعیت دقت زمانی
 yourInformation: مشخصات شما
-validationFailed: اعتبار سنجی موفق آمیز نیست. لطفا کمی صبر کنید و مجددا تلاش نمایید.
+validationFailed: اعتبار سنجی موفقیت آمیز نبود.
+checkYourTimeAccuracy: |
+  <p>ظاهرا زمان دستگاه شما دقیق نیست.</p>
+  <p>از دقت زمانی دستگاه خود مطمئن شوید.</p>
 
 js: بررسی مرورگر
-jsChallengeDescription: برای بررسی مرورگر کمی صبر کنید...
+jsChallengeWaiting: |
+  <p>
+    لطفا
+    <strong>
+      صبر
+    </strong>
+    کنید تا مرورگر شما بررسی شود...
+  </p>
 
-captcha: بررسی ربات
-captchaLabel: عدد نمایش داده شده در تصویر
-captchaChallengeDescription: لطفا کمی صبر کنید...
-captchaChallengeFill: عدد نشان داده شده در تصویر را وارد نمایید
+captcha: بررسی کاربر انسانی
+captchaLabel: عدد مشاهده شده در تصویر فوق
+captchaChallengeWaiting: |
+  <p>
+    لطفا
+    <strong>
+      صبر
+    </strong>
+    کنید تا مرورگر شما بررسی شود...
+  </p>
+captchaChallengeForm: |
+  <p>
+    به دلایل امنیتی و تلاش درخواست های نرم افزارهای غیر مجاز شما باید تصویر ذیل را مشاهده و وارد نمایید.
+  </p>
+  <p>
+    عدد مشاهده شده در تصویر فوق را وارد نمایید.
+  </p>
 
-totp: رمز عبور یکبارمصرف
-totpLabel: رمز عبور کوتاه مدت
-totpChallengeDescription: لطفا کمی صبر کنید...
-totpChallengeFill: رمز عبور خود را وارد نمایید
-checkYourTimeAccuracy: حتما از دقت زمانی دستگاه خود مطمئن باشید که زمان درست در آن تنظیم شده باشد.
+totp: رمز یکبار مصرف بر اساس زمان
+totpLabel: رمز یکبار مصرف
+totpChallengeWaiting: |
+  <p>
+    لطفا
+    <strong>
+      صبر
+    </strong>
+    کنید تا مرورگر شما بررسی شود...
+  </p>
+
+totpChallengeForm: |
+  <p>
+    نشانی خواسته شده توسط
+    <strong>
+      مدیریت بخش فنی
+    </strong>
+    محافظت می‌شود.
+  </p>
+  <p>
+    برای دسترسی به نشانی خواسته شده،
+    <strong>
+      رمز یکبار مصرف بر اساس زمان
+    </strong>
+    خود را وارد نمایید.
+  </p>
+
+ldap: ورود کاربر سازمانی
+ldapUsername: نام کاربری
+ldapPassword: کلمه عبور
+ldapLogin: ورود
+ldapChallengeWaiting: |
+  <p>
+    لطفا
+    <strong>
+      صبر
+    </strong>
+    کنید تا مرورگر شما بررسی شود...
+ldapChallengeForm: |
+  <p>
+    نشانی خواسته شده توسط
+    <strong>
+      مدیریت بخش فنی
+    </strong>
+    و بر اساس دسترسی‌های سازمانی محافظت می‌شود.
+  </p>
+  <p>
+    با استفاده از مشخصات کاربر سازمانی خود(
+    <strong>
+      نام کاربری
+    </strong>
+    و
+    <strong>
+      کلمه عبور
+    </strong>
+    ) و همچنین عدد تصویر نشان داده شده برای دسترسی به نشانی خواست شده اقدام نمایید.
+  </p>
 
 reload: بارگزاری مجدد
 submit: ارسال

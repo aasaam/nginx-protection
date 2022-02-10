@@ -23,6 +23,7 @@ func successResponse(
 	clientPersistChecksum string,
 	aclRule string,
 	value string,
+	username string,
 	ttl int64,
 	ip string,
 	realCheck bool,
@@ -36,9 +37,10 @@ func successResponse(
 			Str(logPropertyIP, ip).
 			Str(logPropertyACL, aclRule).
 			Str(logPropertyValue, value).
+			Str(logPropertyUsername, username).
 			Send()
 
-		aclStorage.add(clientPersistChecksum, aclRule, value, minMaxDefault64(ttl, 60, 600))
+		aclStorage.add(clientPersistChecksum, aclRule, value, username, minMaxDefault64(ttl, 60, 600))
 	}
 	return true
 }
@@ -54,8 +56,9 @@ func checkAuth(c *fiber.Ctx, config *config, aclStorage *aclStorage, realCheck b
 			Info().
 			Str(logType, logTypeAuthCache).
 			Str(logPropertyIP, ip).
+			Str(logPropertyUsername, storageItem.userName).
 			Send()
-		return successResponse(config, aclStorage, persistChecksum, storageItem.rule, storageItem.name, ttl, ip, realCheck)
+		return successResponse(config, aclStorage, persistChecksum, storageItem.rule, storageItem.name, storageItem.userName, ttl, ip, realCheck)
 	}
 
 	defer config.getLogger().
@@ -67,25 +70,25 @@ func checkAuth(c *fiber.Ctx, config *config, aclStorage *aclStorage, realCheck b
 	// api keys
 	success, apiClientName := aclCheckAPIKeys(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleAPI, apiClientName, ttl, ip, realCheck)
+		return successResponse(config, aclStorage, persistChecksum, aclRuleAPI, apiClientName, "", ttl, ip, realCheck)
 	}
 
 	// country
 	success, countryCode := aclCheckCountries(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleCountry, countryCode, ttl, ip, realCheck)
+		return successResponse(config, aclStorage, persistChecksum, aclRuleCountry, countryCode, "", ttl, ip, realCheck)
 	}
 
 	// cidr
 	success, cidr := aclCheckCIDRs(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleCIDR, cidr, ttl, ip, realCheck)
+		return successResponse(config, aclStorage, persistChecksum, aclRuleCIDR, cidr, "", ttl, ip, realCheck)
 	}
 
 	// asn
 	success, asn := aclCheckASNs(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleASN, asn, ttl, ip, realCheck)
+		return successResponse(config, aclStorage, persistChecksum, aclRuleASN, asn, "", ttl, ip, realCheck)
 	}
 
 	// cookie check
@@ -93,7 +96,7 @@ func checkAuth(c *fiber.Ctx, config *config, aclStorage *aclStorage, realCheck b
 	if cookieVar != "" {
 		cookieToken, cookieErr := newPersistTokenFromString(cookieVar, config.tokenSecret)
 		if cookieErr == nil {
-			return successResponse(config, aclStorage, persistChecksum, aclRuleChallenge, cookieToken.Type, ttl, ip, realCheck)
+			return successResponse(config, aclStorage, persistChecksum, aclRuleChallenge, cookieToken.Type, cookieToken.Username, ttl, ip, realCheck)
 		}
 	}
 

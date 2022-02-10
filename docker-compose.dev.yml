@@ -9,6 +9,10 @@ services:
     volumes:
       - ./test/nginx-dev.conf:/etc/nginx/nginx.conf:ro
       - ./static:/static:ro
+  openldap-test:
+    container_name: openldap-test
+    image: ghcr.io/ldapjs/docker-test-openldap/openldap
+    network_mode: host
   protection-rest-captcha-test:
     container_name: protection-rest-captcha-test
     image: ghcr.io/aasaam/rest-captcha:latest

@@ -6,9 +6,10 @@ import (
 )
 
 type aclStorageItem struct {
-	rule   string
-	name   string
-	expire int64
+	rule     string
+	name     string
+	userName string
+	expire   int64
 }
 
 type aclStorage struct {
@@ -28,14 +29,15 @@ func newACLStorage() *aclStorage {
 	return &a
 }
 
-func (a *aclStorage) add(key string, rule string, name string, ttl int64) {
+func (a *aclStorage) add(key string, rule string, name string, userName string, ttl int64) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
 	i := aclStorageItem{
-		rule:   rule,
-		name:   name,
-		expire: time.Now().Unix() + ttl,
+		rule:     rule,
+		name:     name,
+		userName: userName,
+		expire:   time.Now().Unix() + ttl,
 	}
 
 	a.items[key] = i

@@ -13,34 +13,49 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 	challengeType := c.Locals(localVarChallengeType).(string)
 	persistChecksum := c.Locals(localVarClientPersistChecksum).(string)
 	temporaryChecksum := c.Locals(localVarClientTemporaryChecksum).(string)
-	lang := getLanguage(c, config)
 	challengeEmoji := "⌛️"
 	waitSeconds := getConfigWaitSeconds(c)
 	timeoutSeconds := getConfigTimeoutSeconds(c)
+
+	supportedLangauges := getSupportedLangauges(c, config)
+	lang := getLanguage(c, config)
+
+	if !isSupportedLangaugeConfig(lang, supportedLangauges) {
+		lang = config.defaultLanguage
+		supportedLangauges = []string{lang}
+	}
 
 	defer prometheusRequestChallenge.WithLabelValues(challengeType).Inc()
 
 	switch challengeType {
 	case challengeTypeBlock:
+		waitSeconds = 0
+		timeoutSeconds = 0
 		challengeEmoji = "⛔️"
+	case challengeTypeCaptcha:
+		challengeEmoji = getHumanEmoji()
+	case challengeTypeTOTP:
+		challengeEmoji = "🔐"
+	case challengeTypeLDAP:
+		challengeEmoji = "🛂"
 	}
 
 	var challenge *challenge
-
 	challengeToken := ""
 
 	if challengeType != challengeTypeBlock {
 		ttl := getConfigTTLSeconds(c)
 
 		challenge = newChallenge(lang, challengeType, temporaryChecksum, persistChecksum, waitSeconds, timeoutSeconds, ttl)
-		challengeToken, _ = challenge.getChallengeToken(config.clientSecret)
 	}
 
 	if challengeType == challengeTypeTOTP {
 		challenge.setTOTPSecret(c.Locals(localVarTOTPSecret).(string))
 	}
 
-	supportedLanguages, _ := json.Marshal(config.supportedLangauges)
+	languageData := languagesData(supportedLangauges, lang)
+
+	supportedLanguages, _ := json.Marshal(supportedLangauges)
 	supportInfo, _ := json.Marshal(getConfigSupportInfo(c))
 	ipData, _ := json.Marshal(getClientProperties(c))
 	unixTime, _ := json.Marshal(time.Now().Unix())
@@ -52,6 +67,10 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 		Str(logPropertyRequestID, requestID).
 		Str(logPropertyChallengeType, challengeType).
 		Send()
+
+	if challenge != nil {
+		challengeToken, _ = challenge.getChallengeToken(config.clientSecret)
+	}
 
 	// set header
 	c.Set(httpResponseChallengeToken, challengeToken)
@@ -66,9 +85,9 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 		"i18n":                  translateData[lang],
 		"supportedLanguages":    string(supportedLanguages),
 		"multiLanguage":         len(config.supportedLangauges) > 1,
-		"languageData":          languagesData(config.supportedLangauges, lang),
+		"languageData":          languageData,
 		"challengeEmoji":        challengeEmoji,
-		"organizationTitle":     getConfigI18nOrganizationTitle(c, config),
+		"organizationTitle":     getConfigI18nOrganizationTitle(c, config, lang),
 		"organizationBrandIcon": getConfigI18nOrganizationBrandIcon(c),
 		"challengeType":         challengeType,
 		"persistChecksum":       persistChecksum,
@@ -83,6 +102,7 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 		"protectedPath":  getProtectedPath(c),
 		"supportInfo":    string(supportInfo),
 		"waitSeconds":    waitSeconds,
+		"timeoutSeconds": timeoutSeconds,
 		"baseURL":        config.baseURL,
 	}, "templates/layouts/main")
 }

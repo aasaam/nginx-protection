@@ -231,7 +231,7 @@ func TestHTTPTest03(t *testing.T) {
 	if resp2.StatusCode != 200 {
 		t.Errorf("must response")
 	}
-	tokenString2 := resp2.Header.Get(httpResponseChallengeToken)
+	tokenString2 := resp2.Header.Get(httpResponseChallengeTemporary)
 	time.Sleep(time.Second * 3)
 	chReq2 := challengeRequest{
 		ChallengeToken: tokenString2,
@@ -251,7 +251,7 @@ func TestHTTPTest03(t *testing.T) {
 		t.Errorf("must response")
 		return
 	}
-	tokenString22 := resp22.Header.Get(httpResponseChallengeToken)
+	tokenString22 := resp22.Header.Get(httpResponseChallengeTemporary)
 	challenge22, _ := newChallengeFromString(tokenString22, clientSecret)
 	chReq22 := challengeRequest{
 		ChallengeToken: tokenString22,
@@ -273,7 +273,7 @@ func TestHTTPTest03(t *testing.T) {
 	if resp222.StatusCode != 200 {
 		t.Errorf("must response")
 	}
-	resultValue222 := resp222.Header.Get(httpResponseChallengeResult)
+	resultValue222 := resp222.Header.Get(httpResponseChallengePersist)
 
 	// using cookie
 	req4 := httptest.NewRequest("GET", "/.well-known/protection/auth", nil)
@@ -319,7 +319,7 @@ func TestHTTPTest04(t *testing.T) {
 		t.Errorf("must response")
 		return
 	}
-	tokenString2 := resp2.Header.Get(httpResponseChallengeToken)
+	tokenString2 := resp2.Header.Get(httpResponseChallengeTemporary)
 	time.Sleep(time.Second * 3)
 	chReq2 := challengeRequest{
 		ChallengeToken: tokenString2,
@@ -339,7 +339,7 @@ func TestHTTPTest04(t *testing.T) {
 		t.Errorf("must response")
 		return
 	}
-	tokenString22 := resp22.Header.Get(httpResponseChallengeToken)
+	tokenString22 := resp22.Header.Get(httpResponseChallengeTemporary)
 	challenge22, _ := newChallengeFromString(tokenString22, clientSecret)
 	chReq22 := challengeRequest{
 		ChallengeToken: tokenString22,
@@ -358,7 +358,7 @@ func TestHTTPTest04(t *testing.T) {
 	if resp222.StatusCode != 200 {
 		t.Errorf("must response")
 	}
-	resultValue222 := resp222.Header.Get(httpResponseChallengeResult)
+	resultValue222 := resp222.Header.Get(httpResponseChallengePersist)
 	// using cookie
 	req4 := httptest.NewRequest("GET", "/.well-known/protection/auth", nil)
 	req4.Header.Set("X-Forwarded-For", ip)

@@ -160,7 +160,7 @@ func httpChallengePost(c *fiber.Ctx, config *config, challengeStorage *challenge
 			Expires:  time.Now().Add(time.Second * time.Duration(challenge.TTL)),
 		}
 
-		c.Set(httpResponseChallengeResult, tokenString)
+		c.Set(httpResponseChallengePersist, tokenString)
 
 		c.Cookie(tokenCookie)
 		if ldapCookie != nil {

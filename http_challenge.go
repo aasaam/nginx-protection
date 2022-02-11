@@ -73,7 +73,7 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 	}
 
 	// set header
-	c.Set(httpResponseChallengeToken, challengeToken)
+	c.Set(httpResponseChallengeTemporary, challengeToken)
 
 	// return nil
 	return c.Render("templates/"+challengeType, fiber.Map{

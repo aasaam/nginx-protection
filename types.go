@@ -8,7 +8,7 @@ import (
 
 const defaultOrganizationName = "aasaam software development group"
 const defaultCookieName = "aasaam_protection"
-const defaultUsernameCookieName = "protection_auth_user_name"
+const defaultUsernameCookieName = "protection_auth_username"
 
 const misconfigureStatus = fiber.StatusNotImplemented
 
@@ -121,8 +121,8 @@ const (
 	httpRequestHeaderACLASNRanges = "X-Protection-ACL-ASN-Ranges"
 	httpRequestHeaderACLAPIKeys   = "X-Protection-ACL-API-Keys"
 
-	httpResponseChallengeToken  = "X-Challenge-Token"
-	httpResponseChallengeResult = "X-Challenge-Result"
+	httpResponseChallengeTemporary = "X-Challenge-Temporary"
+	httpResponseChallengePersist   = "X-Challenge-Persist"
 )
 
 type supportInfo struct {

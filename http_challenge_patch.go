@@ -116,6 +116,6 @@ func httpChallengePatch(c *fiber.Ctx, config *config) error {
 		return errors.New(errorMessage)
 	}
 
-	c.Set(httpResponseChallengeToken, chResp.ChallengeToken)
+	c.Set(httpResponseChallengeTemporary, chResp.ChallengeToken)
 	return c.JSON(chResp)
 }

@@ -105,7 +105,6 @@ const (
 	httpRequestHeaderConfigLDAPBaseDN            = "X-Protection-Config-LDAP-Base-DN"
 	httpRequestHeaderConfigLDAPFilter            = "X-Protection-Config-LDAP-Filter"
 	httpRequestHeaderConfigLDAPAttributes        = "X-Protection-Config-LDAP-Attributes"
-	httpRequestHeaderConfigLDAPLoginPattern      = "X-Protection-Config-LDAP-Login-Pattern"
 
 	// Client:
 	httpRequestHeaderClientTemporaryChecksum = "X-Protection-Client-Temporary-Checksum"

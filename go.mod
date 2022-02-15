@@ -6,7 +6,7 @@ require (
 	github.com/aasaam/aes-go v0.0.4
 	github.com/go-ldap/ldap/v3 v3.4.1
 	github.com/gofiber/adaptor/v2 v2.1.17
-	github.com/gofiber/fiber/v2 v2.26.0
+	github.com/gofiber/fiber/v2 v2.27.0
 	github.com/gofiber/helmet/v2 v2.2.6
 	github.com/gofiber/template v1.6.22
 	github.com/mdp/qrterminal v1.0.1

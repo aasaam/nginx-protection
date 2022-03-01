@@ -65,6 +65,37 @@ func totpCheck(c *cli.Context) error {
 	return nil
 }
 
+func ldapCheck(c *cli.Context) error {
+	success, ldapCheckError, ldapConfigError := ldapLogin(
+		c.String("url"),
+		c.String("read-only-username"),
+		c.String("read-only-password"),
+		c.String("base-dn"),
+		c.String("filter"),
+		c.String("attributes-json"),
+		c.String("username"),
+		c.String("password"),
+	)
+
+	if ldapCheckError != nil {
+		fmt.Println("LDAP check error")
+		return ldapCheckError
+	}
+
+	if ldapConfigError != nil {
+		fmt.Println("LDAP config error")
+		return ldapConfigError
+	}
+
+	if success {
+		fmt.Println("Login successfull")
+	} else {
+		fmt.Println("Login failed")
+	}
+
+	return nil
+}
+
 func runServer(c *cli.Context) error {
 
 	challengeStorage := newChallengeStorage()
@@ -137,6 +168,53 @@ func main() {
 				},
 				&cli.StringFlag{
 					Name:     "pass",
+					Usage:    "Password",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:   "check-ldap",
+			Usage:  "Check ldap login",
+			Action: ldapCheck,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:     "url",
+					Usage:    "LDAP server URL",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:     "read-only-username",
+					Usage:    "Read only username",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:     "read-only-password",
+					Usage:    "Read only password",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:     "base-dn",
+					Usage:    "Base distinguished name",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:     "filter",
+					Usage:    "Filter",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:  "attributes-json",
+					Usage: "Attributes list in JSON format",
+					Value: `["dn"]`,
+				},
+				&cli.StringFlag{
+					Name:     "username",
+					Usage:    "Username",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:     "password",
 					Usage:    "Password",
 					Required: true,
 				},

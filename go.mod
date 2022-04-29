@@ -13,7 +13,7 @@ require (
 	github.com/pquerna/otp v1.3.0
 	github.com/prometheus/client_golang v1.12.1
 	github.com/rs/zerolog v1.26.1
-	github.com/urfave/cli/v2 v2.3.0
+	github.com/urfave/cli/v2 v2.5.1
 	golang.org/x/text v0.3.7
 	gopkg.in/yaml.v2 v2.4.0
 )

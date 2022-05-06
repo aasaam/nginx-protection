@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/aasaam/aes-go v0.0.4
 	github.com/go-ldap/ldap/v3 v3.4.3
-	github.com/gofiber/adaptor/v2 v2.1.18
+	github.com/gofiber/adaptor/v2 v2.1.23
 	github.com/gofiber/fiber/v2 v2.32.0
 	github.com/gofiber/helmet/v2 v2.2.12
 	github.com/gofiber/template v1.6.23

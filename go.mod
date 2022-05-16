@@ -11,7 +11,7 @@ require (
 	github.com/gofiber/template v1.6.27
 	github.com/mdp/qrterminal v1.0.1
 	github.com/pquerna/otp v1.3.0
-	github.com/prometheus/client_golang v1.12.1
+	github.com/prometheus/client_golang v1.12.2
 	github.com/rs/zerolog v1.26.1
 	github.com/urfave/cli/v2 v2.6.0
 	golang.org/x/text v0.3.7

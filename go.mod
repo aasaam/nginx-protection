@@ -7,7 +7,7 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.3
 	github.com/gofiber/adaptor/v2 v2.1.23
 	github.com/gofiber/fiber/v2 v2.34.0
-	github.com/gofiber/helmet/v2 v2.2.12
+	github.com/gofiber/helmet/v2 v2.2.13
 	github.com/gofiber/template v1.6.27
 	github.com/mdp/qrterminal v1.0.1
 	github.com/pquerna/otp v1.3.0

@@ -12,7 +12,7 @@ require (
 	github.com/mdp/qrterminal v1.0.1
 	github.com/pquerna/otp v1.3.0
 	github.com/prometheus/client_golang v1.12.2
-	github.com/rs/zerolog v1.26.1
+	github.com/rs/zerolog v1.27.0
 	github.com/urfave/cli/v2 v2.8.0
 	golang.org/x/text v0.3.7
 	gopkg.in/yaml.v2 v2.4.0
@@ -30,6 +30,8 @@ require (
 	github.com/gofiber/utils v0.1.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/klauspost/compress v1.15.0 // indirect
+	github.com/mattn/go-colorable v0.1.12 // indirect
+	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect

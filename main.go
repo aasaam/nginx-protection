@@ -240,7 +240,7 @@ func main() {
 					Name:    "listen",
 					Usage:   "Listen HTTP address for application",
 					Value:   "127.0.0.1:9121",
-					EnvVars: []string{"ASM_NGINX_PROTECTION_LISTEN_ADDRESS"},
+					EnvVars: []string{"ASM_NGINX_PROTECTION_LISTEN"},
 				},
 				&cli.StringFlag{
 					Name:    "rest-captcha-server-url",
@@ -275,7 +275,7 @@ func main() {
 					Name:    "locale-path",
 					Usage:   "Path of merged locale data",
 					Value:   "/etc/nginx-protection/locale",
-					EnvVars: []string{"ASM_LOCALE_PATH"},
+					EnvVars: []string{"ASM_NGINX_PROTECTION_LOCALE_PATH"},
 				},
 				&cli.StringFlag{
 					Name:    "log-level",

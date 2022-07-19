@@ -17,12 +17,12 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 	waitSeconds := getConfigWaitSeconds(c)
 	timeoutSeconds := getConfigTimeoutSeconds(c)
 
-	supportedLangauges := getSupportedLangauges(c, config)
+	supportedLanguages := getSupportedLanguages(c)
 	lang := getLanguage(c, config)
 
-	if !isSupportedLangaugeConfig(lang, supportedLangauges) {
+	if !isSupportedLanguageConfig(lang, supportedLanguages) {
 		lang = config.defaultLanguage
-		supportedLangauges = []string{lang}
+		supportedLanguages = []string{lang}
 	}
 
 	defer prometheusRequestChallenge.WithLabelValues(challengeType).Inc()
@@ -53,9 +53,9 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 		challenge.setTOTPSecret(c.Locals(localVarTOTPSecret).(string))
 	}
 
-	languageData := languagesData(supportedLangauges, lang)
+	languageData := languagesData(supportedLanguages, lang)
 
-	supportedLanguages, _ := json.Marshal(supportedLangauges)
+	supportedLanguagesJSON, _ := json.Marshal(supportedLanguages)
 	supportInfo, _ := json.Marshal(getConfigSupportInfo(c))
 	ipData, _ := json.Marshal(getClientProperties(c))
 	unixTime, _ := json.Marshal(time.Now().Unix())
@@ -83,11 +83,11 @@ func httpChallenge(c *fiber.Ctx, config *config) error {
 		"dir":                   getLanguageDirection(lang),
 		"staticURL":             config.staticURL,
 		"i18n":                  translateData[lang],
-		"supportedLanguages":    string(supportedLanguages),
-		"multiLanguage":         len(config.supportedLangauges) > 1,
+		"supportedLanguages":    string(supportedLanguagesJSON),
+		"multiLanguage":         len(config.supportedLanguages) > 1,
 		"languageData":          languageData,
 		"challengeEmoji":        challengeEmoji,
-		"organizationTitle":     getConfigI18nOrganizationTitle(c, config, lang),
+		"organizationTitle":     getConfigI18nOrganizationTitle(c, lang),
 		"organizationBrandIcon": getConfigI18nOrganizationBrandIcon(c),
 		"challengeType":         challengeType,
 		"persistChecksum":       persistChecksum,

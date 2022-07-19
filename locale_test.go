@@ -10,11 +10,11 @@ func TestLocaleFunction(t *testing.T) {
 	langs2 := []string{"fa", "en"}
 	languagesData(langs2, "ar")
 
-	if isSupportedLangauge("en") != true {
+	if isSupportedLanguage("en") != true {
 		t.Errorf("en is valid")
 	}
 
-	if isSupportedLangauge("11") != false {
+	if isSupportedLanguage("11") != false {
 		t.Errorf("11 is in valid")
 	}
 

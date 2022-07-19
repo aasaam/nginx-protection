@@ -17,7 +17,7 @@ type config struct {
 	staticURL          string
 	restCaptchaURL     string
 	defaultLanguage    string
-	supportedLangauges []string
+	supportedLanguages []string
 	localePath         string
 
 	logger *zerolog.Logger
@@ -27,7 +27,7 @@ func newConfig(
 	logLevel string,
 	aasaamWebServer bool,
 	defaultLanguage string,
-	supportedLangauges string,
+	supportedLanguages string,
 	tokenSecret string,
 	clientSecret string,
 	baseURL string,
@@ -44,7 +44,7 @@ func newConfig(
 		cdnStatic:          false,
 		restCaptchaURL:     strings.TrimRight(restCaptchaURL, "/"),
 		defaultLanguage:    "en",
-		supportedLangauges: []string{"en"},
+		supportedLanguages: []string{"en"},
 		localePath:         localePath,
 	}
 
@@ -67,22 +67,22 @@ func newConfig(
 		c.staticURL = c.baseURL + "/challenge/static"
 	}
 
-	if supportedLangauges != "" {
-		langs := strings.Split(strings.TrimSpace(supportedLangauges), ",")
-		c.supportedLangauges = []string{}
+	if supportedLanguages != "" {
+		langs := strings.Split(strings.TrimSpace(supportedLanguages), ",")
+		c.supportedLanguages = []string{}
 		for _, l := range langs {
-			if isSupportedLangauge(l) {
-				c.supportedLangauges = append(c.supportedLangauges, l)
+			if isSupportedLanguage(l) {
+				c.supportedLanguages = append(c.supportedLanguages, l)
 			}
 		}
 	}
 
-	if isSupportedLangauge(defaultLanguage) {
+	if isSupportedLanguage(defaultLanguage) {
 		c.defaultLanguage = defaultLanguage
 	}
 
-	if len(c.supportedLangauges) == 0 {
-		c.supportedLangauges = []string{c.defaultLanguage}
+	if len(c.supportedLanguages) == 0 {
+		c.supportedLanguages = []string{c.defaultLanguage}
 	}
 
 	return &c

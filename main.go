@@ -14,7 +14,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func generateSecret(c *cli.Context) error {
+func generateSecret(_ *cli.Context) error {
 	fmt.Println(aes.GenerateKey())
 	return nil
 }

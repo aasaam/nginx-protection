@@ -174,11 +174,11 @@ func getConfigUnauthorizedStatus(c *fiber.Ctx) int {
 	return minMaxDefault(statusCode, 400, 499)
 }
 
-func getSupportedLangauges(c *fiber.Ctx, config *config) []string {
+func getSupportedLanguages(c *fiber.Ctx) []string {
 	supportedLanguages := []string{}
 	headerValue := strings.Split(c.Get(httpRequestHeaderConfigSupportedLanguages, ""), ",")
 	for _, lang := range headerValue {
-		if isSupportedLangauge(lang) {
+		if isSupportedLanguage(lang) {
 			supportedLanguages = append(supportedLanguages, lang)
 		}
 	}
@@ -187,11 +187,11 @@ func getSupportedLangauges(c *fiber.Ctx, config *config) []string {
 
 func getLanguage(c *fiber.Ctx, config *config) string {
 	queryLang := c.Query("lang", "")
-	if isSupportedLangauge(queryLang) {
+	if isSupportedLanguage(queryLang) {
 		return queryLang
 	}
 	headerLang := c.Get(httpRequestHeaderConfigLang, "")
-	if isSupportedLangauge(headerLang) {
+	if isSupportedLanguage(headerLang) {
 		return headerLang
 	}
 	return config.defaultLanguage
@@ -206,7 +206,7 @@ func getConfigSupportInfo(c *fiber.Ctx) *supportInfo {
 	return &supportInfo
 }
 
-func getConfigI18nOrganizationTitle(c *fiber.Ctx, config *config, lang string) string {
+func getConfigI18nOrganizationTitle(c *fiber.Ctx, lang string) string {
 	title := c.Get(httpRequestHeaderConfigOrganizationTitle, defaultOrganizationName)
 
 	v := c.Get(httpRequestHeaderConfigI18nOrganizationTitle, "_")

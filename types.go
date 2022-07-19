@@ -153,15 +153,15 @@ var rtlLanguagesMap map[string]bool
 var supportedChallenges = []string{challengeTypeBlock, challengeTypeJS, challengeTypeCaptcha, challengeTypeTOTP, challengeTypeLDAP}
 var supportedChallengesMap map[string]bool
 
-var supportedLangauges = []string{"fa", "en"}
-var supportedLangaugesMap map[string]bool
+var supportedLanguages = []string{"fa", "en"}
+var supportedLanguagesMap map[string]bool
 
 var totpSecretRegex = regexp.MustCompile(`^([0-9A-Z]{16})$`)
 
 func init() {
-	supportedLangaugesMap = make(map[string]bool)
-	for _, v := range supportedLangauges {
-		supportedLangaugesMap[v] = true
+	supportedLanguagesMap = make(map[string]bool)
+	for _, v := range supportedLanguages {
+		supportedLanguagesMap[v] = true
 	}
 	supportedChallengesMap = make(map[string]bool)
 	for _, v := range supportedChallenges {

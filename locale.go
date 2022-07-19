@@ -70,7 +70,7 @@ func loadLocales(config *config) {
 
 	result["en"] = loadEmbedLocale("en")
 
-	for _, lang := range config.supportedLangauges {
+	for _, lang := range config.supportedLanguages {
 		if lang == "en" {
 			continue
 		}
@@ -111,11 +111,11 @@ func getLanguageDirection(lang string) string {
 	return "ltr"
 }
 
-func isSupportedLangauge(lang string) bool {
-	return supportedLangaugesMap[lang]
+func isSupportedLanguage(lang string) bool {
+	return supportedLanguagesMap[lang]
 }
 
-func isSupportedLangaugeConfig(lang string, supported []string) bool {
+func isSupportedLanguageConfig(lang string, supported []string) bool {
 	for _, supportedLanguage := range supported {
 		if lang == supportedLanguage {
 			return true

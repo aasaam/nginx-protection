@@ -19,9 +19,6 @@ COPY --from=static /src/static /src/static
 
 RUN cd /src \
   && go get -u -v golang.org/x/lint/golint \
-  && go mod tidy \
-  && go get -u -v \
-  && go mod download \
   && golint . \
   && export CI=1 \
   && go test -covermode=count -coverprofile=coverage.out \

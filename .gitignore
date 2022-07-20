@@ -1,5 +1,4 @@
 coverage.*
-go.sum
 tmp/
 nginx-protection
 nginx-protection*

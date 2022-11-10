@@ -31,7 +31,7 @@
     "eslint-plugin-prettier": "^4",
     "eslint-plugin-react": "^7",
     "eslint-plugin-sonarjs": "^0",
-    "node-sass": "^7",
+    "node-sass": "^8",
     "prettier": "^2",
     "strip-comments": "^2",
     "uglify-js": "^3"

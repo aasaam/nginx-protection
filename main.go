@@ -20,9 +20,13 @@ func generateSecret(_ *cli.Context) error {
 }
 
 func generateTOTPSecret(c *cli.Context) error {
-	secret := totpGenerate()
-	otpURL := fmt.Sprintf("otpauth://totp/protection@%s", c.String("host"))
+	fmt.Println(totpGenerate())
+	return nil
+}
 
+func generateTOTP(c *cli.Context) error {
+	otpURL := fmt.Sprintf("otpauth://totp/protection@%s", c.String("host"))
+	secret := c.String("secret")
 	u, _ := url.Parse(otpURL)
 	q, _ := url.ParseQuery(u.RawQuery)
 	q.Add("secret", secret)
@@ -145,13 +149,23 @@ func main() {
 			Action: generateSecret,
 		},
 		{
+			Name:   "generate-totp-secret",
+			Usage:  "Generate TOTP secret",
+			Action: generateTOTPSecret,
+		},
+		{
 			Name:   "generate-totp",
 			Usage:  "Generate QR code for otp",
-			Action: generateTOTPSecret,
+			Action: generateTOTP,
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:     "host",
 					Usage:    "Hostname",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:     "secret",
+					Usage:    "Secret of TOTP",
 					Required: true,
 				},
 			},

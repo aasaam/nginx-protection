@@ -28,7 +28,7 @@ RUN cd /src \
   && echo "TOTAL_COVERAGE_FOR_CI_F: $TOTAL_COVERAGE_FOR_CI_F" \
   && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o nginx-protection
 
-FROM scratch
+FROM alpine
 
 COPY --from=builder /src/nginx-protection /usr/bin/nginx-protection
 

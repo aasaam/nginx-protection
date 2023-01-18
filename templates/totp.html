@@ -55,14 +55,12 @@
                 name="totp"
                 dir="ltr"
                 required
-                min="100000"
-                max="999999"
                 data-ng-model="formData.totpValue"
                 data-ng-keypress="($event.charCode === 13 ) ? solve($event) : return"
-                inputmode="numeric"
                 class="input is-large"
                 data-ng-class="{'is-danger': main.totp.$touched && main.totp.$invalid, 'is-success': main.totp.$touched && main.totp.$valid }"
-                type="number"
+                type="text"
+                pattern="[0-9]{6}"
                 placeholder="[[ .i18n.totpLabel ]]"
                 title="[[ .i18n.totpLabel ]]"
               />

@@ -22,7 +22,7 @@ var templates embed.FS
 //go:embed static/*
 var static embed.FS
 
-func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorage *aclStorage) *fiber.App {
+func newHTTPServer(config *config) *fiber.App {
 	engine := html.NewFileSystem(http.FS(templates), ".html")
 	engine.Delims("[[", "]]")
 	engine.AddFunc(
@@ -40,6 +40,7 @@ func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorag
 		DisableStartupMessage: true,
 		Prefork:               false,
 		Views:                 engine,
+		BodyLimit:             1024 * 1024 * 4,
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
 			if e, ok := err.(*fiber.Error); ok {
@@ -101,8 +102,9 @@ func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorag
 			return fiber.NewError(misconfigureStatus, "Configuration failed: "+configError.Error())
 		}
 
-		success := checkAuth(c, config, aclStorage, true)
+		success := checkAuth(c, config, true)
 		if success {
+			c.Status(200)
 			return c.JSON("Authorized")
 		}
 
@@ -115,11 +117,6 @@ func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorag
 		configError := checkConfiguration(c)
 		if configError != nil {
 			return fiber.NewError(misconfigureStatus, "Configuration failed: "+configError.Error())
-		}
-
-		success := checkAuth(c, config, aclStorage, false)
-		if success {
-			return c.Redirect(getProtectedPath(c))
 		}
 
 		return httpChallenge(c, config)
@@ -140,7 +137,7 @@ func newHTTPServer(config *config, challengeStorage *challengeStorage, aclStorag
 			return fiber.NewError(misconfigureStatus, "Configuration failed: "+configError.Error())
 		}
 
-		return httpChallengePost(c, config, challengeStorage)
+		return httpChallengePost(c, config)
 	})
 
 	// static serve

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -119,7 +119,7 @@ func (ch *challenge) setCaptchaValue(restCaptchaURL string, difficultyLevel stri
 	}
 	defer resp.Body.Close()
 
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 	var captchaRes captchaResponse
 	err2 := json.Unmarshal(body, &captchaRes)
 	if err2 != nil {

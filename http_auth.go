@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -19,7 +21,6 @@ func failedResponse(config *config, ip string, realCheck bool) bool {
 
 func successResponse(
 	config *config,
-	aclStorage *aclStorage,
 	clientPersistChecksum string,
 	aclRule string,
 	value string,
@@ -40,26 +41,14 @@ func successResponse(
 			Str(logPropertyUsername, username).
 			Send()
 
-		aclStorage.add(clientPersistChecksum, aclRule, value, username, minMaxDefault64(ttl, 60, 600))
 	}
 	return true
 }
 
-func checkAuth(c *fiber.Ctx, config *config, aclStorage *aclStorage, realCheck bool) bool {
+func checkAuth(c *fiber.Ctx, config *config, realCheck bool) bool {
 	ttl := getConfigTTLSeconds(c)
 	persistChecksum := c.Locals(localVarClientPersistChecksum).(string)
 	ip := c.Locals(localVarIP).(string)
-
-	storageItem := aclStorage.exist(persistChecksum)
-	if storageItem != nil {
-		defer config.getLogger().
-			Info().
-			Str(logType, logTypeAuthCache).
-			Str(logPropertyIP, ip).
-			Str(logPropertyUsername, storageItem.userName).
-			Send()
-		return successResponse(config, aclStorage, persistChecksum, storageItem.rule, storageItem.name, storageItem.userName, ttl, ip, realCheck)
-	}
 
 	defer config.getLogger().
 		Info().
@@ -70,33 +59,34 @@ func checkAuth(c *fiber.Ctx, config *config, aclStorage *aclStorage, realCheck b
 	// api keys
 	success, apiClientName := aclCheckAPIKeys(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleAPI, apiClientName, "", ttl, ip, realCheck)
+		return successResponse(config, persistChecksum, aclRuleAPI, apiClientName, "", ttl, ip, realCheck)
 	}
 
 	// country
 	success, countryCode := aclCheckCountries(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleCountry, countryCode, "", ttl, ip, realCheck)
+		return successResponse(config, persistChecksum, aclRuleCountry, countryCode, "", ttl, ip, realCheck)
 	}
 
 	// cidr
 	success, cidr := aclCheckCIDRs(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleCIDR, cidr, "", ttl, ip, realCheck)
+		return successResponse(config, persistChecksum, aclRuleCIDR, cidr, "", ttl, ip, realCheck)
 	}
 
 	// asn
 	success, asn := aclCheckASNs(c)
 	if success {
-		return successResponse(config, aclStorage, persistChecksum, aclRuleASN, asn, "", ttl, ip, realCheck)
+		return successResponse(config, persistChecksum, aclRuleASN, asn, "", ttl, ip, realCheck)
 	}
 
 	// cookie check
 	cookieVar := c.Cookies(c.Get(httpRequestHeaderConfigCookie, defaultCookieName), "")
 	if cookieVar != "" {
+		fmt.Println(cookieVar)
 		cookieToken, cookieErr := newPersistTokenFromString(cookieVar, config.tokenSecret)
 		if cookieErr == nil {
-			return successResponse(config, aclStorage, persistChecksum, aclRuleChallenge, cookieToken.Type, cookieToken.Username, ttl, ip, realCheck)
+			return successResponse(config, persistChecksum, aclRuleChallenge, cookieToken.Type, cookieToken.Username, ttl, ip, realCheck)
 		}
 	}
 

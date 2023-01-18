@@ -14,7 +14,7 @@ yourIP: IP
 yourASN: ISP
 yourChecksum: Checksum
 yourNodeID: Node ID
-yourTimeAccuracy: Time sync problem?
+yourTimeAccuracy: Is your date time synced?
 yourInformation: Your information
 validationFailed: Validation process failed.
 checkYourTimeAccuracy: |

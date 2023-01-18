@@ -18,7 +18,7 @@ yourIP: آی‌پی(IP)
 yourASN: آی‌اس‌پی(ISP)
 yourChecksum: Checksum
 yourNodeID: نقطه اتصال(Node ID)
-yourTimeAccuracy: وضعیت دقت زمانی
+yourTimeAccuracy: زمان رایانه شما صحیح هست؟
 yourInformation: مشخصات شما
 validationFailed: اعتبار سنجی موفقیت آمیز نبود.
 checkYourTimeAccuracy: |

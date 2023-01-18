@@ -1,4 +1,4 @@
-FROM node:16-bullseye AS static
+FROM node:18-bullseye AS static
 
 ADD . /src
 
@@ -11,7 +11,7 @@ RUN cd /src/web \
   && echo "front build ended" \
   && rm -rf .gitignore
 
-FROM golang:1.17-buster AS builder
+FROM golang:1.19-buster AS builder
 
 ADD . /src
 

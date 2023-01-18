@@ -17,14 +17,12 @@ func TestHTTPTest01(t *testing.T) {
 	tokenSecret := aesGo.GenerateKey()
 	clientSecret := aesGo.GenerateKey()
 	config := newConfig("fatal", false, "en", "en,fa", tokenSecret, clientSecret, "/.well-known/protection", "", "", "")
-	challengeStorage := newChallengeStorage()
-	aclStorage := newACLStorage()
 	clientPersistChecksum := aesGo.GenerateKey()
 	clientTemporaryChecksum := aesGo.GenerateKey()
 	ip := "1.1.1.1"
 
 	// http server
-	httpApp := newHTTPServer(config, challengeStorage, aclStorage)
+	httpApp := newHTTPServer(config)
 
 	// misconfigure: X-Forwarded-For
 	req00 := httptest.NewRequest("GET", "/.well-known/protection/challenge", nil)
@@ -107,14 +105,13 @@ func TestHTTPTest02(t *testing.T) {
 	tokenSecret := aesGo.GenerateKey()
 	clientSecret := aesGo.GenerateKey()
 	config := newConfig("fatal", false, "en", "en,fa", tokenSecret, clientSecret, "/.well-known/protection", "", "", "")
-	challengeStorage := newChallengeStorage()
-	aclStorage := newACLStorage()
+
 	clientPersistChecksum := aesGo.GenerateKey()
 	clientTemporaryChecksum := aesGo.GenerateKey()
 	ip := "1.1.1.1"
 
 	// http server
-	httpApp := newHTTPServer(config, challengeStorage, aclStorage)
+	httpApp := newHTTPServer(config)
 
 	// cidr
 	req1 := httptest.NewRequest("GET", "/.well-known/protection/auth", nil)
@@ -198,14 +195,13 @@ func TestHTTPTest03(t *testing.T) {
 	tokenSecret := aesGo.GenerateKey()
 	clientSecret := aesGo.GenerateKey()
 	config := newConfig("fatal", false, "en", "en,fa", tokenSecret, clientSecret, "/.well-known/protection", "", "", "")
-	challengeStorage := newChallengeStorage()
-	aclStorage := newACLStorage()
+
 	clientPersistChecksum := aesGo.GenerateKey()
 	clientTemporaryChecksum := aesGo.GenerateKey()
 	ip := "1.1.1.1, aa , 8.8.8.8"
 
 	// http server
-	httpApp := newHTTPServer(config, challengeStorage, aclStorage)
+	httpApp := newHTTPServer(config)
 
 	// block
 	req1 := httptest.NewRequest("GET", "/.well-known/protection/challenge", nil)
@@ -297,14 +293,13 @@ func TestHTTPTest04(t *testing.T) {
 	tokenSecret := aesGo.GenerateKey()
 	clientSecret := aesGo.GenerateKey()
 	config := newConfig("fatal", false, "en", "en,fa", tokenSecret, clientSecret, "/.well-known/protection", "", "", "")
-	challengeStorage := newChallengeStorage()
-	aclStorage := newACLStorage()
+
 	clientPersistChecksum := aesGo.GenerateKey()
 	clientTemporaryChecksum := aesGo.GenerateKey()
 	ip := "1.1.1.1, aa , 8.8.8.8"
 
 	// http server
-	httpApp := newHTTPServer(config, challengeStorage, aclStorage)
+	httpApp := newHTTPServer(config)
 
 	// js
 	req2 := httptest.NewRequest("GET", "/.well-known/protection/challenge", nil)
@@ -374,36 +369,5 @@ func TestHTTPTest04(t *testing.T) {
 	resp4, _ := httpApp.Test(req4)
 	if resp4.StatusCode != 200 {
 		t.Errorf("must authorized country")
-	}
-}
-
-func BenchmarkACLStorageOnHTTP(b *testing.B) {
-	// variables
-	tokenSecret := aesGo.GenerateKey()
-	clientSecret := aesGo.GenerateKey()
-	clientPersistChecksum := aesGo.GenerateKey()
-	clientTemporaryChecksum := aesGo.GenerateKey()
-	config := newConfig("fatal", false, "en", "en,fa", tokenSecret, clientSecret, "/.well-known/protection", "", "", "")
-	challengeStorage := newChallengeStorage()
-	aclStorage := newACLStorage()
-	ip := "192.168.1.1"
-
-	// http server
-	httpApp := newHTTPServer(config, challengeStorage, aclStorage)
-
-	for i := 0; i < b.N; i++ {
-		// asn ranges
-		req := httptest.NewRequest("GET", "/.well-known/protection/auth", nil)
-		req.Header.Set("X-Forwarded-For", ip)
-		req.Header.Set(httpRequestHeaderRequestID, aesGo.GenerateKey())
-		req.Header.Set(httpRequestHeaderClientPersistChecksum, clientPersistChecksum)
-		req.Header.Set(httpRequestHeaderClientTemporaryChecksum, clientTemporaryChecksum)
-		req.Header.Set(httpRequestHeaderConfigChallenge, challengeTypeBlock)
-		req.Header.Set(httpRequestHeaderClientASNNumber, "1000")
-		req.Header.Set(httpRequestHeaderACLASNRanges, "10-100,1000-1100")
-		resp, _ := httpApp.Test(req)
-		if resp.StatusCode != 200 {
-			b.Error("must valid")
-		}
 	}
 }

@@ -176,10 +176,15 @@
       };
 
       // challengePOST
+      $rootScope.challengePOSTCalled = false;
       $rootScope.challengePOST = function challengePOST(
         dataObject,
         errorCallback,
       ) {
+        if ($rootScope.challengePOSTCalled) {
+          return;
+        }
+        $rootScope.challengePOSTCalled = true;
         $http({
           url: window.config.baseURL + '/challenge',
           method: 'POST',

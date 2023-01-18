@@ -59,14 +59,12 @@
                 name="captcha"
                 dir="ltr"
                 required
-                min="10000"
-                max="9999999"
                 data-ng-model="formData.captchaValue"
                 data-ng-keypress="($event.charCode === 13 ) ? solve($event) : return"
-                inputmode="numeric"
                 class="input is-large"
                 data-ng-class="{'is-danger': main.captcha.$touched && main.captcha.$invalid, 'is-success': main.captcha.$touched && main.captcha.$valid }"
-                type="number"
+                type="text"
+                pattern="[0-9]{5,7}"
                 placeholder="[[ .i18n.captchaLabel ]]"
                 title="[[ .i18n.captchaLabel ]]"
               />

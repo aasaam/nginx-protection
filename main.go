@@ -65,6 +65,7 @@ func totpCheck(c *cli.Context) error {
 		return err
 	}
 	valid := passCode == c.String("pass")
+	fmt.Println(passCode)
 	fmt.Println(valid)
 	return nil
 }
@@ -102,9 +103,6 @@ func ldapCheck(c *cli.Context) error {
 
 func runServer(c *cli.Context) error {
 
-	challengeStorage := newChallengeStorage()
-	aclStorage := newACLStorage()
-
 	config := newConfig(
 		c.String("log-level"),
 		c.Bool("aasaam-web-server"),
@@ -118,23 +116,8 @@ func runServer(c *cli.Context) error {
 		c.String("locale-path"),
 	)
 
-	go func() {
-		for {
-			challengeStorageCount := challengeStorage.gc()
-			aclStorageCount := aclStorage.gc()
-			config.getLogger().
-				Debug().
-				Str(logType, logTypeApp).
-				Int("challenge_storage_count", challengeStorageCount).
-				Int("acl_storage_count", aclStorageCount).
-				Send()
-
-			time.Sleep(time.Second * 10)
-		}
-	}()
-
 	loadLocales(config)
-	app := newHTTPServer(config, challengeStorage, aclStorage)
+	app := newHTTPServer(config)
 	return app.Listen(c.String("listen"))
 }
 

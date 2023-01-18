@@ -17,4 +17,4 @@ services:
     container_name: protection-rest-captcha-test
     image: ghcr.io/aasaam/rest-captcha:latest
     network_mode: host
-    command: -test-image -return-value
+    command: run -test-image -return-value

@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	"io/ioutil"
 	"os"
 
 	"golang.org/x/text/language"
@@ -24,7 +23,7 @@ func isFileLocaleExist(path, lang string) bool {
 }
 
 func loadFileLocale(path, lang string) map[string]string {
-	file, err := ioutil.ReadFile(path + "/" + lang + ".yml")
+	file, err := os.ReadFile(path + "/" + lang + ".yml")
 	if err != nil {
 		panic(err)
 	}

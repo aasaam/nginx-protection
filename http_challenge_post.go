@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func httpChallengePost(c *fiber.Ctx, config *config, challengeStorage *challengeStorage) error {
+func httpChallengePost(c *fiber.Ctx, config *config) error {
 	ip := c.Locals(localVarIP).(string)
 	requestID := c.Locals(localVarRequestID).(string)
 	temporaryChecksum := c.Locals(localVarClientTemporaryChecksum).(string)
@@ -43,20 +43,6 @@ func httpChallengePost(c *fiber.Ctx, config *config, challengeStorage *challenge
 		return errors.New(errorMessage)
 	}
 
-	if challengeStorage.exist(challenge.ID) {
-		errorMessage := "duplicate try for solve"
-
-		defer config.getLogger().
-			Warn().
-			Str(logPropertyChallengeType, challenge.ChallengeType).
-			Str(logType, logTypeChallengeFailed).
-			Str(logPropertyIP, ip).
-			Str(logPropertyRequestID, requestID).
-			Msg(errorMessage)
-
-		return errors.New(errorMessage)
-	}
-
 	if !challenge.verify(temporaryChecksum) {
 		errorMessage := "token invalid, timeout or expired"
 
@@ -70,8 +56,6 @@ func httpChallengePost(c *fiber.Ctx, config *config, challengeStorage *challenge
 
 		return errors.New(errorMessage)
 	}
-
-	challengeStorage.set(challenge.ID, challenge.TTL)
 
 	valid := false
 

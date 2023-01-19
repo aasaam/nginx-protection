@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -83,7 +81,6 @@ func checkAuth(c *fiber.Ctx, config *config, realCheck bool) bool {
 	// cookie check
 	cookieVar := c.Cookies(c.Get(httpRequestHeaderConfigCookie, defaultCookieName), "")
 	if cookieVar != "" {
-		fmt.Println(cookieVar)
 		cookieToken, cookieErr := newPersistTokenFromString(cookieVar, config.tokenSecret)
 		if cookieErr == nil {
 			return successResponse(config, persistChecksum, aclRuleChallenge, cookieToken.Type, cookieToken.Username, ttl, ip, realCheck)

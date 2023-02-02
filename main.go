@@ -31,12 +31,37 @@ func generateTOTP(c *cli.Context) error {
 	q, _ := url.ParseQuery(u.RawQuery)
 	q.Add("secret", secret)
 	u.RawQuery = q.Encode()
-	fmt.Println("Nginx Variable:")
 
-	nginxVariable1 := fmt.Sprintf("set $protection_config_totp_secret '%s';", secret)
+	t1 := time.Now()
+	passCode1, err := totp.GenerateCodeCustom(secret, t1, totp.ValidateOpts{
+		Skew:      1,
+		Digits:    otp.DigitsSix,
+		Algorithm: otp.AlgorithmSHA1,
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	t2 := time.Now().Add(time.Second * time.Duration(30))
+	passCode2, err := totp.GenerateCodeCustom(secret, t2, totp.ValidateOpts{
+		Skew:      1,
+		Digits:    otp.DigitsSix,
+		Algorithm: otp.AlgorithmSHA1,
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Current password code:")
+	fmt.Println(t1.Format("15:04:05 MST"))
+	fmt.Println(passCode1)
+	fmt.Println("Next password code:")
+	fmt.Println(t2.Format("15:04:05 MST"))
+	fmt.Println(passCode2)
 	fmt.Println("")
-	fmt.Println(nginxVariable1)
-	fmt.Println("")
+
 	fmt.Println("URI:")
 	fmt.Println(u)
 	fmt.Println("")
